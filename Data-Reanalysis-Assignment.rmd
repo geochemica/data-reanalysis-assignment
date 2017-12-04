@@ -4,3 +4,237 @@ author: "Arora"
 date: "December 3, 2017"
 output: html_document
 ---
+#Replication of Ellefsen and Smith 2016
+
+##Introduction 
+#####The following is the reanalysis of Ellefsen and Smith's 2016 paper Manuel hierarchical clustering of regional geochemical data using a Bayesian finite mixture model. 
+#####In this study the authors use a Bayesian finite mixture model to cluster geochemical data from a USGS survey of Colorado. Their use of a Bayesian model is different from previous clustering techniques that others have previously used. 
+#####In their paper they use hierarchical modeling to create two clusters of the data and within each of those clusters are two more clusters and so on, with each level of the cluster representing geochemical and geologic processes occuring at different spacial scales. 
+#####To derieve the model parameters for their Bayesian model they use the Hamiltonian Monte Carlo sampling of the posterior probability function. However using this method of sampling gives several modes each with its own set of model paramters. The parameters are checked against previously known geologic knowledge and the model parameters which best fit the previous knowledge are used for the analysis. 
+#####Spacial analysis of geochemical data allows for researchers to relate geologic, climatic, and biological processes with single or multiple element concentrations. For such as spacial analysis, clustering is a helpful technique especially since survey data can encompass thousands of samples with many elements measured (in my case I use at least 13 elements but in this study 44 elements were measured). These large datasets are difficult to analyze without multivariate techniques however geochemical data is compositional, rather than conventional. I will address what compositional data is and how to analyze this data below. 
+
+##Dataset
+#####The dataset used in the paper and in this replication can be found in the GcClust package which can be download from https://pubs.er.usgs.gov/publication/tm7C13
+#####The dataset for this paper was collected for a USGS (United States Geological Service) survey of soil geochemistry in the state of Colorado. The original dataset for this study consisted of 966 samples with 44 elements measured. Six samples were excludeded because of issues with their location and one was removed because of anthropogenic effects. Five elements were removed because their measured concentrations often fell below their detection limits. This leaves 959 samples with 39 measured elements. Before analysis began the sum of the concentrations of the excluded elements were added up into a column, and the concentrations of the elements were scaled to mg/kg. 
+
+##Outline of Analyses
+
+#####Each of these steps, and the arguments for making them will be outline during the replication itself. 
+
+#####1. Transform compositional data in isometric log-ratio (ilr) coordinates.
+#####2. Transform ilr corrdinates with robust principle componetns transform. 
+#####3. Select subset of components. 
+#####4. Monte Carlo Sampling to produce the chains. 
+#####5. Checking parameters within each chain produced by the Monte Carlo sampling. 
+#####6. Selecting the chains for furthur analyses. 
+#####7. Combining the chains and switching them into their proper place. 
+#####8. Checking convergence of the chains. 
+#####9. Calculate conditional probability that field sample is associated with the first probability density function in the finite mixture model.
+#####10. Use the conditional probabilities to calculate mean vectors, standard deviations, and correlation matrices for both probability density functions for the finite mixture model. 
+#####11. Plot the observed statistics (mean vectors, standard deviations, and correlation matrices). 
+#####12. Transform the observed data into simplex, which is compositional center and variation matrix. 
+#####13. Order the elements for visualization. 
+#####14. Calculate the sample center, translate the compositional centers, and then plot these centers. 
+#####15. Plot the combined variation matrix. 
+#####16. Map the clusters. 
+#####17. Split the geochemical clusters to find small clusters. 
+
+##Compositional Data
+
+
+
+##Reanalysis
+#####First download and open the following packages: {colorspace}, {GcClust}, {ggplot}, {maps}, {mvtnorm}, {reshape2}, {robustbase}, {rstan}, {sp}, {shiny}, {shinystan}
+```{r}
+library(colorspace)
+library(GcClust)
+library(ggplot2)
+library(maps)
+library(mvtnorm)
+library(reshape2)
+library(robustbase)
+library(rstan)
+library(sp)
+library(shiny)
+library(shinystan)
+```
+#####As per the instructions within the supplementary information for the paper, 
+```{r}
+gcData<-CoGeochemData 
+#in their instructions they save their data at each point in .dat files however I did not. 
+```
+#####Next plot a map of Colorado with the points. 
+```{r}
+maps::map(database="state", regions = "Colorado", fill=FALSE)
+plot(gcData$concData, add = TRUE, pch =
+16, cex = 1/3)
+#their original code had fill, a white border, and red points however I could not get that particular code to work so I edited so the points were back and the fill was removed. 
+```
+
+
+```{r}
+transData<-transformGcData(gcData)
+```
+```{r}
+plotEdaDist(transData)
+```
+```{r}
+plotEdaCorr(transData)
+```
+```{r}
+nPCs <- 22
+```
+```{r}
+tmp<-normalizePath(path.package("GcClust"))
+load(paste(tmp, "\\stan\\MixtureModel.bin", sep=""))
+```
+```{r}
+priorParams <- c(4, 3, 3, 2)
+samplePars <- sampleFmm(transData, nPCs,sm, priorParams, nChainsPerCore = 5, nCores = 4)
+```
+```{r}
+sampleFmm <- function(transData, nPCs, sm,
+                      priorParams,
+                      nWuSamples = 500,
+                      nPwuSamples = 500,
+                      nChainsPerCore = 2,
+                      nCores = 4,
+                      procDir = ".") {
+
+
+  rstanParallelSampler <- function(stanData, sm, nWuSamples, nPwuSamples,nChainsPerCore, nCores, procDir ) {
+
+    CL <- parallel::makeCluster(nCores)
+
+    parallel::clusterExport(cl = CL,
+       c("stanData", "sm", "nWuSamples", "nPwuSamples","nChainsPerCore", "procDir"), envir=environment())
+
+    fnlist <- parallel::parLapply(CL, 1:nCores, fun = function(cid) {
+   # Make rstan available to the processors. This function won't work otherwise. 
+      require(rstan, quietly = TRUE)
+
+      fileNames <- vector(mode = "character", length = nChainsPerCore)
+
+      for(i in 1:nChainsPerCore) {
+
+        rng_seed <- sample.int(.Machine$integer.max,1)
+
+        gen_inits <- function() {
+          areInGrp1 <- sample(c(TRUE,FALSE), size = stanData$N,
+                              prob = c(0.3, 0.7), replace = TRUE)
+          return(list(
+            theta = runif(1, min = 0.35, max = 0.65),
+            mu1 = apply(stanData$Z[areInGrp1,], 2, mean ),
+            mu2 = apply(stanData$Z[!areInGrp1,], 2, mean ),
+            tau1 = apply(stanData$Z[areInGrp1,], 2, sd ),
+            tau2 = apply(stanData$Z[!areInGrp1,], 2, sd ),
+            L_Omega1 = diag(stanData$M),
+            L_Omega2 = diag(stanData$M)
+          ))
+        }
+
+
+        rawSamples <- rstan::sampling(sm, data = stanData,
+                                      init = gen_inits,
+                                      # control = list(stepsize = 0.00001),
+                                      control = list(stepsize = 0.0001),
+                                      # control = list(adapt_delta = 0.95),
+                                      chains = 1,
+                                      iter = nWuSamples + nPwuSamples,
+                                      warmup = nWuSamples,
+                                      seed = rng_seed, chain_id = cid,
+                                      pars=c("theta", "mu1", "mu2",
+                                             "tau1", "tau2",
+                                             "L_Omega1", "L_Omega2", "log_lik"))#I took out save_dso=FALSE because R does not understand what save_dso means
+
+        fileNames[i] <- paste("RawSamples", cid, "-", i, ".dat", sep = "")
+        save( rawSamples, file = paste(procDir, "\\", fileNames[i], sep = "") )
+
+      }
+      return(fileNames)
+    } )
+
+    parallel::stopCluster(CL)
+    return(unlist(fnlist))
+  }
+
+  stanData <- list( M = nPCs,
+                    N = nrow(transData$robustPCs),
+                    Z = transData$robustPCs[,1:nPCs],
+                    priorParams = priorParams )
+
+  fileNames <- rstanParallelSampler(stanData, sm, nWuSamples, nPwuSamples,
+                                    nChainsPerCore, nCores, procDir )
+
+  return(list(nChains = nChainsPerCore * nCores,
+              nWuSamples = nWuSamples,
+              nPwuSamples = nPwuSamples,
+              fileNames = fileNames))
+}
+```
+
+```{r}
+plotSelectedTraces(samplePars)
+```
+
+```{r}
+plotPointStats(samplePars)
+```
+```{r}
+selectedChains<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv", header=TRUE, stringsAsFactors = FALSE)
+```
+```{r}
+combinedChains <- combineChains(samplePars,selectedChains)
+```
+
+```{r}
+combineChainz <- function(samplePars, selectedChains, procDir = ".") {
+    sfList[[k]] <- rawSamples
+  return(rstan::sflist2stanfit(sfList))
+}
+#I could not get the if statement to work, so while I figure that out I decided to create this new function combinedChaniz (with a z) and remove to if statement. This means that the first chain (which has been switched around) will not be in the correct order which will of course, change the analysis
+```
+
+```{r}
+combinedChains<-combineChainz(samplePars, selectedChains, procDir = ".")
+```
+```{r}
+condProbs1 <- calcCondProbs1 (transData,nPCs, combinedChains)
+```
+```{r}
+obsTestStats <- calcObsTestStats (transData,nPCs, condProbs1)
+```
+```{r}
+plotTMeanSd(combinedChains, obsTestStats)
+#neither of these plots look particularly off from the ones in the paper
+```
+```{r}
+simplexModPar <- backTransform (gcData,nPCs, transData, combinedChains)
+```
+```{r}
+elementOrder <- c("Sr", "U", "Y", "Nb", "La", "Ce", "Th", "Na", "Al", "Ga","Be", "K", "Rb", "Ba", "Pb", "Cu", "Zn", "Mo", "Mg", "Sc", "Co", "Fe", "V", "Ni","Cr", "Ca", "P", "Ti", "Li", "Mn", "Sn","As", "Bi", "Cd", "In", "S", "Sb", "Tl","W", "EE")
+```
+```{r}
+plotCompMeans(simplexModPar, elementOrder)
+```
+```{r}
+simplexStats <- calcSimplexStats(gcData)
+```
+```{r}
+plotTransCompMeans( simplexModPar,simplexStats, gcData, elementOrder)
+```
+```{r}
+plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
+```
+```{r}
+map(database = "state", regions = "colorado", fill = TRUE, col = "grey95", border = "white")
+map.axes()
+plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
+```
+```{r}
+theSplits <- splitGcData(gcData, condProbs1,threshold = 0.10 )
+```
+```{r}
+gcDatapdf1 <- theSplits$gcData1
+gcDatapdf2 <- theSplits$gcData2
+```
