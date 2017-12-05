@@ -231,15 +231,17 @@ combineChainz <- function(samplePars, selectedChains, procDir = ".") {
 }
 #I could not get the if statement to work, so while I figure that out I decided to create this new function combinedChaniz (with a z) and remove to if statement. This means that the first chain (which has been switched around) will not be in the correct order which will of course, change the analysis
 ```
-
+#####This step combines the chains together so that we can use them for the next step. 
 ```{r}
 combinedChains<-combineChainz(samplePars, selectedChains, procDir = ".")
 ```
+#####Now its time to check the model, which includes the mean vectors, the standard deviation vectors, and the correlation matrices for the two probability density functions. To check the model these are compared with the same statistics calculated from the principle components. 
 
+#####To begin checking the model, we need to calculate the conditional probability that a particular sample is associated with the first probability density function. These conditional probabilities, along with the principle components are used to calculate the mean vectors, standard deviation vectors, and correlation matrices necessary for checking our model. 
 ```{r}
 condProbs1 <- calcCondProbs1 (transData,nPCs, combinedChains)
 ```
-
+#####This is our matrix of our observed data, which are the 22 principle components. 
 ```{r}
 obsTestStats <- calcObsTestStats (transData,nPCs, condProbs1)
 ```
@@ -252,7 +254,7 @@ plotTMeanSd(combinedChains, obsTestStats)
 ```{r}
 simplexModPar <- backTransform (gcData,nPCs, transData, combinedChains)
 ```
-
+#####This is reording the elements so that 
 ```{r}
 elementOrder <- c("Sr", "U", "Y", "Nb", "La", "Ce", "Th", "Na", "Al", "Ga","Be", "K", "Rb", "Ba", "Pb", "Cu", "Zn", "Mo", "Mg", "Sc", "Co", "Fe", "V", "Ni","Cr", "Ca", "P", "Ti", "Li", "Mn", "Sn","As", "Bi", "Cd", "In", "S", "Sb", "Tl","W", "EE")
 ```
