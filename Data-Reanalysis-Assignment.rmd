@@ -61,7 +61,8 @@ library(shinystan)
 #####As per the instructions within the supplementary information for the paper, 
 ```{r}
 gcData<-CoGeochemData 
-#in their instructions they save their data at each point in .dat files however I did not. 
+#in their instructions they save their data at each point in .dat files however I did not.
+#the data needs to be put into gcData because many of the functions (found on their github site here: https://github.com/USGS-R/GcClust/blob/master/R/GcClusterFunctions.R) require the dataset to be in a list called gcData. 
 ```
 #####Next plot a map of Colorado with the points. 
 ```{r}
@@ -72,29 +73,43 @@ plot(gcData$concData, add = TRUE, pch =
 ```
 #add in image of map with sample locations found in the supplementary information
 
-#####Now we are going to transform that data from compositional data to isometric log-ratio coordinates. This is done because normal statistics cannot be run on compositional data. The ilr transformation changes the data into a form that can be clustered. 
+#####Now we are going to transform that data from compositional data to isometric log-ratio coordinates and then transformed again by the robust principle components transform. 
+#####The first is done because normal statistics cannot be run on compositional data. The ilr transformation changes the data into a form that can be clustered. 
+#####The second transformation is done, because the authors assume that transforming ilr coordinates, this will make the coming model more stable. This  transformation does reduce the number of dimensions and allows us to select with compoents will be useful for selecting which principle components are useful in describing variation within the data. 
 ```{r}
 transData<-transformGcData(gcData)
 #I decided not to use the code head(transData) because when doing so, it seems the entire data comes up rather than just the beginning
 ```
-
+####The following are two plots of the principle components. The first is a box plot and the second is a violin plot, ,though they show the same information. As with box plots, the lower end of the whisper shows the 25th percentile and the end of the upper whisker shows the 75th percentile. At this stage my plots and their plots look exactly the same. 
 ```{r}
 plotEdaDist(transData)
 ```
+#add pictures here of their plots
+
+#####This is a correlation matrix of the principle components using (ADD MORE INFORMATION HERE ABOUT PEARSON CORRELATION) and below that graph is the histogram of the correlation components. 
 ```{r}
 plotEdaCorr(transData)
 ```
+#ADD IMAGE OF THEIR GRAPHS HERE
+
+#####Now we will analyze a scree plot. In R in Action a Scree plot is described as:(ADD HERE). Using the major dip in the scree plot, we can determine the number of principle components. We want to choose enough principle components to describe as much of the data as possible however we want to exclude as much noise from the data as possible. And while choosing 39 principle components will describe all the data, we perform principle components analysis to essentially reduce the number of variables. 
+
+```{r}
+plotEdaVar(transData)
+```
+#ADD THEIR PLOT HERE
+#####The authors wanted to select enough principle components to explain 75% to 95% of the data. To do this we could choose any principle component starting at 6 and going until 21, however they decided to select 22 components because that represents 96% of the data. I would probably have chosen 10 principle components however this is the first time that I have used a scree plot and I have visualized PCA very differently using other programs. 
 ```{r}
 nPCs <- 22
 ```
+
+#####This next step is the addition of the Mixture Model from their github repository into the file. Since I have so little experience with Bayesian statistics and no knowledge of the stan programing language, I have yet to parse what their code is actually doing. However I will update this if I can figure it out. 
 ```{r}
 tmp<-normalizePath(path.package("GcClust"))
 load(paste(tmp, "\\stan\\MixtureModel.bin", sep=""))
 ```
-```{r}
-priorParams <- c(4, 3, 3, 2)
-samplePars <- sampleFmm(transData, nPCs,sm, priorParams, nChainsPerCore = 5, nCores = 4)
-```
+
+#####The following code is used to sample the chains, however I had to edit this code because R did not seem to understand some of their code. This function is used in the samplePars function below. 
 ```{r}
 sampleFmm <- function(transData, nPCs, sm,
                       priorParams,
@@ -136,7 +151,6 @@ sampleFmm <- function(transData, nPCs, sm,
           ))
         }
 
-
         rawSamples <- rstan::sampling(sm, data = stanData,
                                       init = gen_inits,
                                       # control = list(stepsize = 0.00001),
@@ -176,6 +190,13 @@ sampleFmm <- function(transData, nPCs, sm,
 }
 ```
 
+#####Now its time to run the model. You will need to figure out how many cores you have and then select then number of chains you want run per core. They had more cores and ran more chains per core and got 35 chains in about 2 hours. I decided to run 20 chains and it took my computer over two hours to perform this. From this point on, their data and my data will look different. 
+```{r}
+priorParams <- c(4, 3, 3, 2)
+samplePars <- sampleFmm(transData, nPCs,sm, priorParams, nChainsPerCore = 5, nCores = 4)
+```
+
+#####This is step 6, selecting which chains to use for furthur analyses. To do this we will first plot the chains
 ```{r}
 plotSelectedTraces(samplePars)
 ```
@@ -267,5 +288,5 @@ library(NbClust)
 
 
 
-#####However again, this method does not actually *test* anything. To attempt that I will need to use a generalized linear model or some other modeling technique, go outside of the replication itself, and try to test some kind of relationship. 
+#####However again, this method does not actually test anything. To attempt that I will need to use a generalized linear model or some other modeling technique, go outside of the replication itself, and try to test some kind of relationship. 
 
