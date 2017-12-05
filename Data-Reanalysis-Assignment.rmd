@@ -241,54 +241,77 @@ combinedChains<-combineChainz(samplePars, selectedChains, procDir = ".")
 ```{r}
 condProbs1 <- calcCondProbs1 (transData,nPCs, combinedChains)
 ```
-#####This is our matrix of our observed data, which are the 22 principle components. 
+#####This matrix is calculated from the 22 principle components and the conditional probabilities. 
 ```{r}
 obsTestStats <- calcObsTestStats (transData,nPCs, condProbs1)
 ```
-
+#####To check the model we will compare the observed statistics (code right above this) with the replicated test statistics which we get from samples of the posterior probability density function. 
+#####In this study, the replicated test statistics are the same as the samples of the mean vectors, standard deviation vectors, and correlation coefficients that we combined together in CombinedChains.
+#####The following is a plot of the mean and standard deviation vectors. The red dot is the test statistic which should be close to the median, the vertical black line represents the 95% confidence interval. This figure also gives p value between the observed and replicated statistics. 
 ```{r}
 plotTMeanSd(combinedChains, obsTestStats)
 #neither of these plots look particularly off from the ones in the paper
+#explain my results here
 ```
+#ADD THEIR GRAPH IN HERE
+#####Now its time to compare the correlation matrices between the test statistics and the replicated statistics. 
+```{r}
+plotTCorr(combinedChains, obsTestStats)
+#this set of four graphs looks very complex at first. Let's first concentrate on the first and third graphs which are fully coloured and have the red diagonal line. The top right triangle of each graph represents the correlation matrix from the principle components. The bottom left triangle represents the correlation matrix from the replicated samples. The comparison between the two is do they look the same? In their case their graphs do look the same across the red line. 
+#The two blue graphs which only fill the top right portion of the graph present the p-values. However these values will be mirror across the diagonal line so both sides are not shown. In this particular analysis, the largest possible posterior predictive p-value is 0.5 and so in their graphs the p-values are, as they state, moderate to large. 
+```
+#ADD THEIR GRAPHS IN HERE
 
+#####The values from combinedChains (mean vector, standard deviation vector, and correlation matrices) are transformed in simplex. I continue to investigate why this transformation needs to take place and what happens. 
 ```{r}
 simplexModPar <- backTransform (gcData,nPCs, transData, combinedChains)
 ```
-#####This is reording the elements so that 
+#####This is reording the elements. I would have done this alphabetically or perhaps in the order of major elements followed by trace elements. 
 ```{r}
 elementOrder <- c("Sr", "U", "Y", "Nb", "La", "Ce", "Th", "Na", "Al", "Ga","Be", "K", "Rb", "Ba", "Pb", "Cu", "Zn", "Mo", "Mg", "Sc", "Co", "Fe", "V", "Ni","Cr", "Ca", "P", "Ti", "Li", "Mn", "Sn","As", "Bi", "Cd", "In", "S", "Sb", "Tl","W", "EE")
 ```
 
+#####Using the elementOrder decided on above, median of the compositional centers for each element (the compositional centers is a vector) is plotted. This graph is useful because the units are in concentration, making it easy to compare to other datasets. 
+##### In the graph there are two dots: one red and one blue. For a particular element the blue dot represents the median concentration as calculated by the first probability density function, and the red dot presents the median concentration as calculated by the second probability density function. 
+
 ```{r}
 plotCompMeans(simplexModPar, elementOrder)
 ```
+#####Add in their graph here
 
+#####Using simplex again, the statistics are translated to allow us to tell the difference between the medians of the first probability density function versus the second. Ellefsen and Smith also want to add additional information to the plot involving the replicated statistics. 
 ```{r}
 simplexStats <- calcSimplexStats(gcData)
 ```
 
+#####This plot has thhe translated data which is cleared to read and has the addition of the 95% confidence interval. As always, blue represents the first probaility density function and red represents the second. The only problem is is that with the transformation, we loose the units of concentration and so this data is less comparable to other data sets. 
 ```{r}
 plotTransCompMeans( simplexModPar,simplexStats, gcData, elementOrder)
 ```
+#ADD THEIR GRAPH IN HERE
 
+#####Our next visualization is looking at the variation matrices for both probability density functions. Like the second and fourth graphs produced in the plotTCorr, the graph is symmetrical across the diagonal line. Unlike the plots in plotTCorr, Ellefsen and Smith decided to combine both variation matrices into one matrix. 
+#####The first probability density function is in the upper right triangle and the second is in the lower left triangle, which I think makes understanding the graphs more difficult. I'll be looking through their code and trying to find a way to split the two matrices. 
+#####This graph is the the standard deviation of the log-ratios between two elements. I've done similar analyses before however each element is plotted against each other individually which makes the graphs very large but its easier to see the variation (in the case I'm discussing a lot of variation looks like a cloud with no patterns; I'll try and insert an image of it in here however the computer we use might be in Greece still).
+#####In mine.....In theirs, it looks like the variance is smaller in the second probability density function than in the first. 
 ```{r}
 plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 ```
+#ADD THEIR GRAPH HERE
 
+
+#####Let's graph the clusters onto the map of Colorado. There are four categories created.
+#####The association between the field sample and the probability distribution is calculated using the range of median probabilities calculated within the conditional probability matrix for the first probability density function (condProb1). The key to interpreting the map and the median probabilities associated with each category explained in the table below. 
 ```{r}
+m<-read.csv(file="C:/Users/Arora/Desktop/MapKey.csv")
+m    
 map(database = "state", regions = "colorado", fill = TRUE, col = "grey95", border = "white")
 map.axes()
 plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
 ```
+#####Glancing at mine.....and from their, most of the points look either strongly associated with the first probability density function or moderately associated with the second. 
+#ADD IN THEIR GRAPH HERE
 
-```{r}
-theSplits <- splitGcData(gcData, condProbs1,threshold = 0.10 )
-```
-
-```{r}
-gcDatapdf1 <- theSplits$gcData1
-gcDatapdf2 <- theSplits$gcData2
-```
 
 ##K-Means Analysis
 #####The replication above, though mostly true to what was done within the paper does not any inferential analysis (for example a t-test). Before attempting to use a generalized linear model to analyze the data provided, I decided to perform a K-means analysis. In the paper they also performed a K-means analysis, however their instruction do not show their code for this portion of the paper, because their argument is that the Bayesian models work better for this particular data set. 
