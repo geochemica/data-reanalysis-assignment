@@ -311,20 +311,3 @@ plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
 ```
 #####Glancing at mine.....and from their, most of the points look either strongly associated with the first probability density function or moderately associated with the second. 
 #ADD IN THEIR GRAPH HERE
-
-
-##K-Means Analysis
-#####The replication above, though mostly true to what was done within the paper does not any inferential analysis (for example a t-test). Before attempting to use a generalized linear model to analyze the data provided, I decided to perform a K-means analysis. In the paper they also performed a K-means analysis, however their instruction do not show their code for this portion of the paper, because their argument is that the Bayesian models work better for this particular data set. 
-
-#####In the discussion section of their paper they outline their K-means clustering as follows: it uses 22 principle components, and uses four clusters. This removes the need to test for the number of clusters to use. 
-
-#####Load {NbClust} as used in Module 25
-```{r}
-library(NbClust)
-```
-
-
-
-
-#####However again, this method does not actually test anything. To attempt that I will need to use a generalized linear model or some other modeling technique, go outside of the replication itself, and try to test some kind of relationship. 
-
