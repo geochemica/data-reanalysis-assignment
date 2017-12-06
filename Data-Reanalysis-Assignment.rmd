@@ -37,7 +37,6 @@ output: html_document
 #####14. Calculate the sample center, translate the compositional centers, and then plot these centers. 
 #####15. Plot the combined variation matrix. 
 #####16. Map the clusters. 
-#####17. Split the geochemical clusters to find small clusters. 
 
 ##Compositional Data
 
@@ -64,7 +63,10 @@ gcData<-CoGeochemData
 #in their instructions they save their data at each point in .dat files however I did not.
 #the data needs to be put into gcData because many of the functions (found on their github site here: https://github.com/USGS-R/GcClust/blob/master/R/GcClusterFunctions.R) require the dataset to be in a list called gcData. 
 ```
-#####Next plot a map of Colorado with the points. 
+```{r}
+#This is their map:
+```
+
 ```{r}
 maps::map(database="state", regions = "Colorado", fill=FALSE)
 plot(gcData$concData, add = TRUE, pch =
@@ -99,6 +101,7 @@ plotEdaVar(transData)
 ```
 #ADD THEIR PLOT HERE
 #####The authors wanted to select enough principle components to explain 75% to 95% of the data. To do this we could choose any principle component starting at 6 and going until 21, however they decided to select 22 components because that represents 96% of the data. I would probably have chosen 10 principle components however this is the first time that I have used a scree plot and I have visualized PCA very differently using other programs. 
+
 ```{r}
 nPCs <- 22
 ```
@@ -216,6 +219,8 @@ plotPointStats(samplePars)
 ```{r}
 f<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv")
 f    
+```
+```{r}
 selectedChains<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv", header=TRUE, stringsAsFactors = FALSE)
 ```
 
@@ -226,10 +231,15 @@ combinedChains <- combineChains(samplePars,selectedChains)
 
 ```{r}
 combineChainz <- function(samplePars, selectedChains, procDir = ".") {
+  sfList <- vector(mode = "list")
+  for(k in 1:nrow(selectedChains)) {
+    iChain <- selectedChains[k, "Chain"]
+    load( paste(procDir, "\\", samplePars$fileNames[iChain], sep = ""))
     sfList[[k]] <- rawSamples
   return(rstan::sflist2stanfit(sfList))
+  }
 }
-#I could not get the if statement to work, so while I figure that out I decided to create this new function combinedChaniz (with a z) and remove to if statement. This means that the first chain (which has been switched around) will not be in the correct order which will of course, change the analysis
+#I could not get the if statement to work, so while I figure that out I decided to create this new function combinedChaniz (with a z) and remove to if statement. This means that the first and fourth chains (which have been switched around) will not be in the correct order which will of course, change the analysis
 ```
 #####This step combines the chains together so that we can use them for the next step. 
 ```{r}
@@ -311,3 +321,4 @@ plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
 ```
 #####Glancing at mine.....and from their, most of the points look either strongly associated with the first probability density function or moderately associated with the second. 
 #ADD IN THEIR GRAPH HERE
+
