@@ -63,9 +63,6 @@ gcData<-CoGeochemData
 #in their instructions they save their data at each point in .dat files however I did not.
 #the data needs to be put into gcData because many of the functions (found on their github site here: https://github.com/USGS-R/GcClust/blob/master/R/GcClusterFunctions.R) require the dataset to be in a list called gcData. 
 ```
-```{r}
-#This is their map:
-```
 
 ```{r}
 maps::map(database="state", regions = "Colorado", fill=FALSE)
@@ -73,7 +70,10 @@ plot(gcData$concData, add = TRUE, pch =
 16, cex = 1/3)
 #their original code had fill, a white border, and red points however I could not get that particular code to work so I edited so the points were back and the fill was removed. 
 ```
-#add in image of map with sample locations found in the supplementary information
+```{r}
+#This is their map:
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Original_Map.jpg)
+```
 
 #####Now we are going to transform that data from compositional data to isometric log-ratio coordinates and then transformed again by the robust principle components transform. 
 #####The first is done because normal statistics cannot be run on compositional data. The ilr transformation changes the data into a form that can be clustered. 
@@ -86,20 +86,29 @@ transData<-transformGcData(gcData)
 ```{r}
 plotEdaDist(transData)
 ```
-#add pictures here of their plots
+```{r}
+#These are their principle component plots:
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Principle_Component_Plots.jpg)
+```
 
 #####This is a correlation matrix of the principle components using (ADD MORE INFORMATION HERE ABOUT PEARSON CORRELATION) and below that graph is the histogram of the correlation components. 
 ```{r}
 plotEdaCorr(transData)
 ```
-#ADD IMAGE OF THEIR GRAPHS HERE
+```{r}
+#This is there correlation matrix and histogram for the principle components.
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Correlation_Matrix_for_PCA.jpg)
+```
 
 #####Now we will analyze a scree plot. In R in Action a Scree plot is described as:(ADD HERE). Using the major dip in the scree plot, we can determine the number of principle components. We want to choose enough principle components to describe as much of the data as possible however we want to exclude as much noise from the data as possible. And while choosing 39 principle components will describe all the data, we perform principle components analysis to essentially reduce the number of variables. 
 
 ```{r}
 plotEdaVar(transData)
 ```
-#ADD THEIR PLOT HERE
+```{r}
+#This is the authors' scree plot.
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Scree_Plott.jpg)
+```
 #####The authors wanted to select enough principle components to explain 75% to 95% of the data. To do this we could choose any principle component starting at 6 and going until 21, however they decided to select 22 components because that represents 96% of the data. I would probably have chosen 10 principle components however this is the first time that I have used a scree plot and I have visualized PCA very differently using other programs. 
 
 ```{r}
@@ -203,13 +212,20 @@ samplePars <- sampleFmm(transData, nPCs,sm, priorParams, nChainsPerCore = 5, nCo
 ```{r}
 plotSelectedTraces(samplePars)
 ```
-#ADD AN IMAGE OF THEIRS HERE
+```{r}
+#These are the plot traces for the first chain.
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Trace_Chain_1.jpg)
+```
 
 #####Now we will examine each mode (that is each chain) and select the mode which best fits the data. According to the authors it is temping to select the mode with the highest log-likelihood however the modes should be selected on how well they explain the geochemical data, not how high their log-likelihood ratio is. 
 ```{r}
 plotPointStats(samplePars)
 ```
-#ADD THEIR PLOTS IN HERE
+```{r}
+#These are the plots of the following vectors for the chains: mean, standard deviation, proportion, and log-likelihood. 
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Point_Statistics.jpg)
+```
+
 #####As you can see our plots are slightly different. The key to understanding the "switch" that they discuss in their supplementary data is to understand that the first probability density function is blue and the second probability density function is red. To complete the analysis they have outline below the blue chains should be on top and the red chains should be on the bottom. 
 
 #####I too decided to choose the first four chains. Their explanation about how to choose modes that best fit the geochemical data was unclear; while I look for furthur resources about how to choose the best modes for the given data I decided to follow their example. 
@@ -263,14 +279,21 @@ plotTMeanSd(combinedChains, obsTestStats)
 #neither of these plots look particularly off from the ones in the paper
 #explain my results here
 ```
-#ADD THEIR GRAPH IN HERE
+```{r}
+#These are the plots of the vectors for both probabilityh density functions fo model checking. 
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Model_Checking.jpg)
+```
+
 #####Now its time to compare the correlation matrices between the test statistics and the replicated statistics. 
 ```{r}
 plotTCorr(combinedChains, obsTestStats)
 #this set of four graphs looks very complex at first. Let's first concentrate on the first and third graphs which are fully coloured and have the red diagonal line. The top right triangle of each graph represents the correlation matrix from the principle components. The bottom left triangle represents the correlation matrix from the replicated samples. The comparison between the two is do they look the same? In their case their graphs do look the same across the red line. 
 #The two blue graphs which only fill the top right portion of the graph present the p-values. However these values will be mirror across the diagonal line so both sides are not shown. In this particular analysis, the largest possible posterior predictive p-value is 0.5 and so in their graphs the p-values are, as they state, moderate to large. 
 ```
-#ADD THEIR GRAPHS IN HERE
+```{r}
+#These are the plots of the correlation matrices for both probabilityh density functions fo model checking. 
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Model_Check_Matrices.jpg)
+```
 
 #####The values from combinedChains (mean vector, standard deviation vector, and correlation matrices) are transformed in simplex. I continue to investigate why this transformation needs to take place and what happens. 
 ```{r}
@@ -281,13 +304,16 @@ simplexModPar <- backTransform (gcData,nPCs, transData, combinedChains)
 elementOrder <- c("Sr", "U", "Y", "Nb", "La", "Ce", "Th", "Na", "Al", "Ga","Be", "K", "Rb", "Ba", "Pb", "Cu", "Zn", "Mo", "Mg", "Sc", "Co", "Fe", "V", "Ni","Cr", "Ca", "P", "Ti", "Li", "Mn", "Sn","As", "Bi", "Cd", "In", "S", "Sb", "Tl","W", "EE")
 ```
 
-#####Using the elementOrder decided on above, median of the compositional centers for each element (the compositional centers is a vector) is plotted. This graph is useful because the units are in concentration, making it easy to compare to other datasets. 
-##### In the graph there are two dots: one red and one blue. For a particular element the blue dot represents the median concentration as calculated by the first probability density function, and the red dot presents the median concentration as calculated by the second probability density function. 
+#####Using the elementOrder decided on above, median of the compositional centers for each element (the compositional centers is a vector) is plotted. This graph is useful because the units are in concentration, making it easy to compare to other datasets.
+#####In the graph there are two dots: one red and one blue. For a particular element the blue dot represents the median concentration as calculated by the first probability density function, and the red dot presents the median concentration as calculated by the second probability density function. 
 
 ```{r}
 plotCompMeans(simplexModPar, elementOrder)
 ```
-#####Add in their graph here
+```{r}
+#This is the plot of the compositional centers from Ellefsen and Smith:
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Compositional_Centers.jpg)
+```
 
 #####Using simplex again, the statistics are translated to allow us to tell the difference between the medians of the first probability density function versus the second. Ellefsen and Smith also want to add additional information to the plot involving the replicated statistics. 
 ```{r}
@@ -298,7 +324,10 @@ simplexStats <- calcSimplexStats(gcData)
 ```{r}
 plotTransCompMeans( simplexModPar,simplexStats, gcData, elementOrder)
 ```
-#ADD THEIR GRAPH IN HERE
+```{r}
+This is the plot of the translated compositional centers:
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Translated_Compositional_Centers.jpg)
+```
 
 #####Our next visualization is looking at the variation matrices for both probability density functions. Like the second and fourth graphs produced in the plotTCorr, the graph is symmetrical across the diagonal line. Unlike the plots in plotTCorr, Ellefsen and Smith decided to combine both variation matrices into one matrix. 
 #####The first probability density function is in the upper right triangle and the second is in the lower left triangle, which I think makes understanding the graphs more difficult. I'll be looking through their code and trying to find a way to split the two matrices. 
@@ -307,7 +336,10 @@ plotTransCompMeans( simplexModPar,simplexStats, gcData, elementOrder)
 ```{r}
 plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 ```
-#ADD THEIR GRAPH HERE
+```{r}
+#This is the authors' plot of the variation correlation matrices:
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Variation_Matrix.jpg)
+```
 
 
 #####Let's graph the clusters onto the map of Colorado. There are four categories created.
@@ -320,5 +352,8 @@ map.axes()
 plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
 ```
 #####Glancing at mine.....and from their, most of the points look either strongly associated with the first probability density function or moderately associated with the second. 
-#ADD IN THEIR GRAPH HERE
+```{r}
+#This is their map of mode one:
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Map_Mode.jpg)
+```
 
