@@ -71,8 +71,7 @@ plot(gcData$concData, add = TRUE, pch =
 #their original code had fill, a white border, and red points however I could not get that particular code to work so I edited so the points were back and the fill was removed. 
 ```
 ```{r}
-#This is their map:
-![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Original_Map.jpg)
+![This is their map:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Original_Map.jpg)
 ```
 
 #####Now we are going to transform that data from compositional data to isometric log-ratio coordinates and then transformed again by the robust principle components transform. 
