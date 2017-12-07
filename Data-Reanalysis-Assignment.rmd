@@ -21,22 +21,18 @@ output: html_document
 
 #####Each of these steps, and the arguments for making them will be outline during the replication itself. 
 
-#####1. Transform compositional data in isometric log-ratio (ilr) coordinates.
-#####2. Transform ilr corrdinates with robust principle componetns transform. 
-#####3. Select subset of components. 
-#####4. Monte Carlo Sampling to produce the chains. 
-#####5. Checking parameters within each chain produced by the Monte Carlo sampling. 
-#####6. Selecting the chains for furthur analyses. 
-#####7. Combining the chains and switching them into their proper place. 
-#####8. Checking convergence of the chains. 
-#####9. Calculate conditional probability that field sample is associated with the first probability density function in the finite mixture model.
-#####10. Use the conditional probabilities to calculate mean vectors, standard deviations, and correlation matrices for both probability density functions for the finite mixture model. 
-#####11. Plot the observed statistics (mean vectors, standard deviations, and correlation matrices). 
-#####12. Transform the observed data into simplex, which is compositional center and variation matrix. 
-#####13. Order the elements for visualization. 
-#####14. Calculate the sample center, translate the compositional centers, and then plot these centers. 
-#####15. Plot the combined variation matrix. 
-#####16. Map the clusters. 
+#####1. Transform compositional data in isometric log-ratio (ilr) coordinates, and transform the ilr coordinates with the robust principle components transform. 
+#####2. Select a subset of components. 
+#####3. Use Monte Carlo Sampling to produce the chains.  
+#####4. Check the chains. 
+#####5.Select chains for furthur analysis.
+#####6.  Combining the chains and switching them into their proper place. (The switching could not be done for reasons stated below; the chains should be checked for convergence but this is done outside of rstudio and so is not within this file).
+#####7. Calculate conditional probability that field sample is associated with the first probability density function in the finite mixture model. 
+#####8.  Use the conditional probabilities to calculate mean vectors, standard deviations, and correlation matrices for both probability density functions for the finite mixture model. 
+#####9. Plot the observed statistics (mean vectors, standard deviations, and correlation matrices). 
+#####10. Transform the observed data into simplex, which is compositional center and variation matrix. 
+#####11. Visualize the data by looking at compositional centers and variation matrices. Map the clusters in terms of their relationship with the probability density functions.  
+
 
 ##Compositional Data
 #####Compositional data is always postive and adds up to 100% and in geology is often derieved from counts and then scaled into the units of concentration. One of the problems with composition data is that because all the data is in the positive real space, measures such as variance are impractical. This particular issue is called the constraint problem and can be solved through a transformation. Currently the most robust, though statistically least understood, method for transformation is the isometric log-ratio transformation. Like most transformations, it is difficult to relate the results after the transformation has taken place with the original dataset. For this reason compositional data should be analyzed in the following way: (1) transform the data, (2) perform any desired statistical analyses, (3) analyze the results, usually by transforming back into the original units. 
@@ -89,8 +85,7 @@ plotEdaDist(transData)
 
 ![These are their principle component plots:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Principle_Component_Plots.jpg)
 
-
-#####This is a correlation matrix of the principle components using (ADD MORE INFORMATION HERE ABOUT PEARSON CORRELATION) and below that graph is the histogram of the correlation components. 
+#####This is a correlation matrix of the principle components using the Pearson's correlation coefficient, which is like R-squared, so a -1 exactly negative correlation, a zero is correlation, and a +1 is complete positive correlation. Below that graph is the histogram of the correlations and sits in the range of very poor correlation in the both positive and negative directions. 
 ```{r}
 plotEdaCorr(transData)
 ```
@@ -110,13 +105,13 @@ plotEdaVar(transData)
 nPCs <- 22
 ```
 
-#####This next step is the addition of the Mixture Model from their github repository into the file. Since I have so little experience with Bayesian statistics and no knowledge of the stan programing language, I have yet to parse what their code is actually doing. However I will update this if I can figure it out. 
+#####This next step is the addition of the Mixture Model from their github repository into the file. Since I have so little experience with Bayesian statistics and no knowledge of the stan programing language, I have yet to parse what their code is actually doing. However I will update this once I can figure it out, though that might be after this class is over.  
 ```{r}
 tmp<-normalizePath(path.package("GcClust"))
 load(paste(tmp, "\\stan\\MixtureModel.bin", sep=""))
 ```
 
-#####The following code is used to sample the chains, however I had to edit this code because R did not seem to understand some of their code. This function is used in the samplePars function below. 
+#####The following code is used to sample the chains, however I had to edit this code because R fun some of their code. This function is used in the samplePars function below. 
 ```{r}
 sampleFmm <- function(transData, nPCs, sm,
                       priorParams,
@@ -135,7 +130,7 @@ sampleFmm <- function(transData, nPCs, sm,
        c("stanData", "sm", "nWuSamples", "nPwuSamples","nChainsPerCore", "procDir"), envir=environment())
 
     fnlist <- parallel::parLapply(CL, 1:nCores, fun = function(cid) {
-   # Make rstan available to the processors. This function won't work otherwise. 
+
       require(rstan, quietly = TRUE)
 
       fileNames <- vector(mode = "character", length = nChainsPerCore)
@@ -169,7 +164,8 @@ sampleFmm <- function(transData, nPCs, sm,
                                       seed = rng_seed, chain_id = cid,
                                       pars=c("theta", "mu1", "mu2",
                                              "tau1", "tau2",
-                                             "L_Omega1", "L_Omega2", "log_lik"))#I took out save_dso=FALSE because R does not seem to understand what save_dso means
+                                             "L_Omega1", "L_Omega2", "log_lik"))
+        #I took out save_dso=FALSE because R does not run save_dso 
 
         fileNames[i] <- paste("RawSamples", cid, "-", i, ".dat", sep = "")
         save( rawSamples, file = paste(procDir, "\\", fileNames[i], sep = "") )
@@ -198,9 +194,13 @@ sampleFmm <- function(transData, nPCs, sm,
 ```
 
 #####Now its time to run the model. You will need to figure out how many cores you have and then select then number of chains you want run per core. They had more cores and ran more chains per core and got 35 chains in about 2 hours. I decided to run 20 chains and it took my computer over two hours to perform this. From this point on, their data and my data will look different. 
+
+#####However there I could find no way of putting in the model I ran previous to knitting into this file. For this reason my explanation will be on the images I have inserted of their work. This also means that if any chains are switched below, I will not know until file has been knit so my csv file for switching chains will have the default that no chains need to be switched. I have inserted images of my plots into this file so that I could discuss my original results. 
+ 
 ```{r}
 priorParams <- c(4, 3, 3, 2)
 samplePars <- sampleFmm(transData, nPCs,sm, priorParams, nChainsPerCore = 5, nCores = 4)
+
 ```
 
 #####This is step 6, selecting which chains to use for furthur analyses. The problem we have is that the number of model parameters is very large; with 22 principle components the number of model parameters is 551, and that's just in one chain. To do this we will first plot the chains. 
@@ -226,6 +226,7 @@ plotPointStats(samplePars)
 ```{r}
 f<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv")
 f    
+#this file is based on
 ```
 ```{r}
 selectedChains<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv", header=TRUE, stringsAsFactors = FALSE)
@@ -246,7 +247,7 @@ combineChainz <- function(samplePars, selectedChains, procDir = ".") {
   return(rstan::sflist2stanfit(sfList))
   }
 }
-#I could not get the if statement to work, so while I figure that out I decided to create this new function combinedChaniz (with a z) and remove to if statement. This means that the first and fourth chains (which have been switched around) will not be in the correct order which will of course, change the analysis
+#I could not get the if statement to work, so while I figure that out I decided to create this new function combinedChaniz (with a z) and remove to if statement. This means that the first and fourth chains (which have been switched around) will not be in the correct order which will of course, change the analysis. 
 ```
 #####This step combines the chains together so that we can use them for the next step. 
 ```{r}
@@ -293,14 +294,14 @@ elementOrder <- c("Sr", "U", "Y", "Nb", "La", "Ce", "Th", "Na", "Al", "Ga","Be",
 ```
 
 #####Using the elementOrder decided on above, median of the compositional centers for each element (the compositional centers is a vector) is plotted. This graph is useful because the units are in concentration, making it easy to compare to other datasets.
-#####In the graph there are two dots: one red and one blue. For a particular element the blue dot represents the median concentration as calculated by the first probability density function, and the red dot presents the median concentration as calculated by the second probability density function. 
+#####In the graph there are two dots: one red and one blue. For a particular element the blue dot represents the median concentration as calculated by the first probability density function, and the red dot presents the median concentration as calculated by the second probability density function. In some of the elements it is easy to make out that there is a large difference between the two probability density functions, however some elements are right on top of each other according to this cale. It's for these reasons that the next transformation is done. 
 
 ```{r}
 plotCompMeans(simplexModPar, elementOrder)
 ```
 ![This is the plot of the compositional centers from Ellefsen and Smith:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Compositional_Centers.jpg)
 
-#####Using simplex again, the statistics are translated to allow us to tell the difference between the medians of the first probability density function versus the second. Ellefsen and Smith also want to add additional information to the plot involving the replicated statistics. 
+#####Using simplex again, the statistics are translated to allow us to tell the difference between the medians of the first probability density function versus the second. Ellefsen and Smith also want to add additional information to the plot involving the replicated statistics.
 ```{r}
 simplexStats <- calcSimplexStats(gcData)
 ```
@@ -312,7 +313,7 @@ plotTransCompMeans( simplexModPar,simplexStats, gcData, elementOrder)
 ![This is the plot of the translated compositional centers:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Translated_Compositional_Centers.jpg)
 
 #####Our next visualization is looking at the variation matrices for both probability density functions. Like the second and fourth graphs produced in the plotTCorr, the graph is symmetrical across the diagonal line. Unlike the plots in plotTCorr, Ellefsen and Smith decided to combine both variation matrices into one matrix. 
-#####The first probability density function is in the upper right triangle and the second is in the lower left triangle, which I think makes understanding the graphs more difficult. I'll be looking through their code and trying to find a way to split the two matrices. 
+#####The first probability density function is in the upper right triangle and the second is in the lower left triangle, which I think makes understanding the graphs more difficult. 
 #####This graph is the the standard deviation of the log-ratios between two elements. I've done similar analyses before however each element is plotted against each other individually which makes the graphs very large but its easier to see the variation (in the case I'm discussing a lot of variation looks like a cloud with no patterns; I'll try and insert an image of it in here however the computer we use might be in Greece still).
 #####In mine.....In theirs, it looks like the variance is smaller in the second probability density function than in the first. 
 ```{r}
@@ -331,7 +332,7 @@ map(database = "state", regions = "colorado", fill = TRUE, col = "grey95", borde
 map.axes()
 plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
 ```
-#####Glancing at mine.....and from their, most of the points look either strongly associated with the first probability density function or moderately associated with the second. 
+#####Glancing at mine there is mostly blue and red, and from their plot most of the points look either strongly associated with the first probability density function or moderately associated with the second. In this case our plots are very similar. 
 ![This is their map of mode one:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Map_Mode.jpg)
-
+##Works Cited
 
