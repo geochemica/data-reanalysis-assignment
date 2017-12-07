@@ -39,6 +39,8 @@ output: html_document
 #####16. Map the clusters. 
 
 ##Compositional Data
+#####Compositional data is always postive and adds up to 100% and in geology is often derieved from counts and then scaled into the units of concentration. One of the problems with composition data is that because all the data is in the positive real space, measures such as variance are impractical. This particular issue is called the constraint problem and can be solved through a transformation. Currently the most robust, though statistically least understood, method for transformation is the isometric log-ratio transformation. Like most transformations, it is difficult to relate the results after the transformation has taken place with the original dataset. For this reason compositional data should be analyzed in the following way: (1) transform the data, (2) perform any desired statistical analyses, (3) analyze the results, usually by transforming back into the original units. 
+#####One important concept about compositional data that is central to geochemical work is subcompositional coherence. This essentially means that taking a part out of the whole does not change the value of the part. 
 
 
 
@@ -230,7 +232,7 @@ selectedChains<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv", heade
 ```
 
 
-```{r}
+```{r, eval=FALSE}
 combinedChains <- combineChains(samplePars,selectedChains)
 ```
 
