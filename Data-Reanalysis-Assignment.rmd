@@ -397,7 +397,7 @@ plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 
 #####Note how due to the translation, we can now distinguish between the two probability density functions for Thallium and Antimony. 
 
-![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_comp_centers.JPG)
+![]()
 
 #####Our next visualization is looking at the variation matrices for both probability density functions. Like the second and fourth graphs produced in the plotTCorr, the graph is symmetrical across the diagonal line. Unlike the plots in plotTCorr, Ellefsen and Smith decided to combine both variation matrices into one matrix. 
 
@@ -415,7 +415,7 @@ plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 
 #####In theirs variation matrix it looks like the variance is smaller in the second probability density function than in the first.
 
-![] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_variation_correlation_matrix.JPG)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_variation_correlation_matrix.JPG)
 
 #####In my variation matrix it looks like the upper triangle has a higher standard deviation than the lower triangle. 
 
