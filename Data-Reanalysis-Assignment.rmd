@@ -7,6 +7,7 @@ output: html_document
 #Replication of Ellefsen and Smith 2016
 
 ##Introduction 
+
 #####The following is the reanalysis of Ellefsen and Smith's 2016 paper Manuel hierarchical clustering of regional geochemical data using a Bayesian finite mixture model. 
 #####In this study the authors use a Bayesian finite mixture model to cluster geochemical data from a USGS survey of Colorado. Their use of a Bayesian model is different from previous clustering techniques that others have previously used. 
 #####In their paper they use hierarchical modeling to create two clusters of the data and within each of those clusters are two more clusters and so on, with each level of the cluster representing geochemical and geologic processes occuring at different spacial scales. 
@@ -14,6 +15,7 @@ output: html_document
 #####Spacial analysis of geochemical data allows for researchers to relate geologic, climatic, and biological processes with single or multiple element concentrations. For such as spacial analysis, clustering is a helpful technique especially since survey data can encompass thousands of samples with many elements measured (in my case I use at least 13 elements but in this study 44 elements were measured). These large datasets are difficult to analyze without multivariate techniques however geochemical data is compositional, rather than conventional. I will address what compositional data is and how to analyze this data below. 
 
 ##Dataset
+
 #####The dataset used in the paper and in this replication can be found in the GcClust package which can be download from https://pubs.er.usgs.gov/publication/tm7C13
 #####The dataset for this paper was collected for a USGS (United States Geological Service) survey of soil geochemistry in the state of Colorado. The original dataset for this study consisted of 966 samples with 44 elements measured. Six samples were excludeded because of issues with their location and one was removed because of anthropogenic effects. Five elements were removed because their measured concentrations often fell below their detection limits. This leaves 959 samples with 39 measured elements. Before analysis began the sum of the concentrations of the excluded elements were added up into a column, and the concentrations of the elements were scaled to mg/kg. 
 
