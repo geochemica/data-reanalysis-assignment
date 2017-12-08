@@ -229,7 +229,7 @@ sampleFmm <- function(transData, nPCs, sm,
 
 #####However there I could find no way of putting in the model I ran previous to knitting into this file. For this reason my explanation will be on the images I have inserted of their work. This also means that if any chains are switched below, I will not know until file has been knit so my csv file for switching chains will have the default that no chains need to be switched. I have inserted images of my plots into this file so that I could discuss my original results. 
  
-```{r}
+```{r, eval=FALSE}
 priorParams <- c(4, 3, 3, 2)
 samplePars <- sampleFmm(transData, nPCs,sm, priorParams, nChainsPerCore = 5, nCores = 4)
 
@@ -237,7 +237,7 @@ samplePars <- sampleFmm(transData, nPCs,sm, priorParams, nChainsPerCore = 5, nCo
 
 #####This is step 6, selecting which chains to use for furthur analyses. The problem we have is that the number of model parameters is very large; with 22 principle components the number of model parameters is 551, and that's just in one chain. To do this we will first plot the chains. 
 
-```{r}
+```{r, eval=FALSE}
 plotSelectedTraces(samplePars)
 #I only included the picture of the first chain instead of all twenty (from the model I run prior to knitting) because adding all twenty seemed excessive 
 ```
@@ -252,7 +252,7 @@ plotSelectedTraces(samplePars)
 
 #####Now we will examine each mode (that is each chain) and select the mode which best fits the data. According to the authors it is temping to select the mode with the highest log-likelihood however the modes should be selected on how well they explain the geochemical data, not how high their log-likelihood ratio is. 
 
-```{r}
+```{r, eval=FALSE}
 plotPointStats(samplePars)
 ```
 
@@ -269,14 +269,14 @@ plotPointStats(samplePars)
 
 #####Now set up a csv file with the chains you have selected. As stated above I decided to select the first four chains however X has the two chains switched. If I was following their example I would switch the chains so that all of the first probability density function information is "on top" of the second probability density function. However when attempting to perform the switch, the if  statement does not work. I have worked through the function and have yet to come up with a solution and so have replaced combineChains with combineChainz which does not contain the if statement. 
 
-```{r}
+```{r, eval=FALSE}
 f<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv")
 f    
 #Ellefsen and Smith give the format for this file in their guide to using GcClust.
 #Because I do not know which chains the mixing model will switch when I knit, and because the switching chains function does not work, this file is written assuming no switches need to take place. 
 ```
 
-```{r}
+```{r, eval=FALSE}
 selectedChains<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv", header=TRUE, stringsAsFactors = FALSE)
 ```
 
@@ -284,7 +284,7 @@ selectedChains<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv", heade
 combinedChains <- combineChains(samplePars,selectedChains)
 ```
 
-```{r}
+```{r, eval=FALSE}
 combineChainz <- function(samplePars, selectedChains, procDir = ".") {
   sfList <- vector(mode = "list")
   for(k in 1:nrow(selectedChains)) {
@@ -298,7 +298,7 @@ combineChainz <- function(samplePars, selectedChains, procDir = ".") {
 
 #####This step combines the chains together so that we can use them for the next step. 
 
-```{r}
+```{r, eval=FALSE}
 combinedChains<-combineChainz(samplePars, selectedChains, procDir = ".")
 ```
 
@@ -306,13 +306,13 @@ combinedChains<-combineChainz(samplePars, selectedChains, procDir = ".")
 
 #####To begin checking the model, we need to calculate the conditional probability that a particular sample is associated with the first probability density function. These conditional probabilities, along with the principle components are used to calculate the mean vectors, standard deviation vectors, and correlation matrices necessary for checking our model. 
 
-```{r}
+```{r, eval=FALSE}
 condProbs1 <- calcCondProbs1 (transData,nPCs, combinedChains)
 ```
 
 #####This matrix is calculated from the 22 principle components and the conditional probabilities. 
 
-```{r}
+```{r, eval=FALSE}
 obsTestStats <- calcObsTestStats (transData,nPCs, condProbs1)
 ```
 
@@ -322,7 +322,7 @@ obsTestStats <- calcObsTestStats (transData,nPCs, condProbs1)
 
 #####The following is a plot of the mean and standard deviation vectors. The red dot is the test statistic which should be close to the median, the vertical black line represents the 95% confidence interval. This figure also gives p value between the observed and replicated statistics. 
 
-```{r}
+```{r, eval=FALSE}
 plotTMeanSd(combinedChains, obsTestStats)
 ```
 
@@ -337,7 +337,7 @@ plotTMeanSd(combinedChains, obsTestStats)
 
 #####Now its time to compare the correlation matrices between the test statistics and the replicated statistics. 
 
-```{r}
+```{r, eval=FALSE}
 plotTCorr(combinedChains, obsTestStats)
 #this set of four graphs looks very complex at first. Let's first concentrate on the first and third graphs which are fully coloured and have the red diagonal line. The top right triangle of each graph represents the correlation matrix from the principle components. The bottom left triangle represents the correlation matrix from the replicated samples. The comparison between the two is do they look the same? In their case their graphs do look the same across the red line. 
 #The two blue graphs which only fill the top right portion of the graph present the p-values. However these values will be mirror across the diagonal line so both sides are not shown. In this particular analysis, the largest possible posterior predictive p-value is 0.5 and so in their graphs the p-values are, as they state, moderate to large. 
@@ -355,7 +355,7 @@ plotTCorr(combinedChains, obsTestStats)
 
 #####The values from combinedChains (mean vector, standard deviation vector, and correlation matrices) are transformed in simplex. Simplex here refers to an algorithm in linear programming which helps with optimization. 
 
-```{r}
+```{r, eval=FALSE}
 simplexModPar <- backTransform (gcData,nPCs, transData, combinedChains)
 ```
 
@@ -369,7 +369,7 @@ elementOrder <- c("Sr", "U", "Y", "Nb", "La", "Ce", "Th", "Na", "Al", "Ga","Be",
 
 #####In the graph there are two dots: one red and one blue. For a particular element the blue dot represents the median concentration as calculated by the first probability density function, and the red dot presents the median concentration as calculated by the second probability density function. In some of the elements it is easy to make out that there is a large difference between the two probability density functions, however some elements are right on top of each other according to this cale. It's for these reasons that the next transformation is done. 
 
-```{r}
+```{r, eval=FALSE}
 plotCompMeans(simplexModPar, elementOrder)
 ```
 
@@ -383,13 +383,13 @@ plotCompMeans(simplexModPar, elementOrder)
 
 #####Using simplex again, the statistics are translated to allow us to tell the difference between the medians of the first probability density function versus the second. Ellefsen and Smith also want to add additional information to the plot involving the replicated statistics.
 
-```{r}
+```{r, eval=FALSE}
 simplexStats <- calcSimplexStats(gcData)
 ```
 
 #####This plot has thhe translated data which is cleared to read and has the addition of the 95% confidence interval. As always, blue represents the first probaility density function and red represents the second. The only problem is is that with the transformation, we loose the units of concentration and so this data is less comparable to other data sets. 
 
-```{r}
+```{r, eval=FALSE}
 plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 ```
 
@@ -407,7 +407,7 @@ plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 
 #####In mine.... 
 
-```{r}
+```{r, eval=FALSE}
 plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 ```
 
@@ -423,7 +423,7 @@ plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 
 #####The association between the field sample and the probability distribution is calculated using the range of median probabilities calculated within the conditional probability matrix for the first probability density function (condProb1). The key to interpreting the map and the median probabilities associated with each category explained in the table below. 
 
-```{r}
+```{r, eval=FALSE}
 m<-read.csv(file="C:/Users/Arora/Desktop/MapKey.csv")
 m    
 map(database = "state", regions = "colorado", fill = TRUE, col = "grey95", border = "white")
