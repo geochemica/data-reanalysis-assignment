@@ -9,9 +9,13 @@ output: html_document
 ##Introduction 
 
 #####The following is the reanalysis of Ellefsen and Smith's 2016 paper Manuel hierarchical clustering of regional geochemical data using a Bayesian finite mixture model. 
+
 #####In this study the authors use a Bayesian finite mixture model to cluster geochemical data from a USGS survey of Colorado. Their use of a Bayesian model is different from previous clustering techniques that others have previously used. 
+
 #####In their paper they use hierarchical modeling to create two clusters of the data and within each of those clusters are two more clusters and so on, with each level of the cluster representing geochemical and geologic processes occuring at different spacial scales. 
+
 #####To derieve the model parameters for their Bayesian model they use the Hamiltonian Monte Carlo sampling of the posterior probability function. However using this method of sampling gives several modes each with its own set of model paramters. The parameters are checked against previously known geologic knowledge and the model parameters which best fit the previous knowledge are used for the analysis. 
+
 #####Spacial analysis of geochemical data allows for researchers to relate geologic, climatic, and biological processes with single or multiple element concentrations. For such as spacial analysis, clustering is a helpful technique especially since survey data can encompass thousands of samples with many elements measured (in my case I use at least 13 elements but in this study 44 elements were measured). These large datasets are difficult to analyze without multivariate techniques however geochemical data is compositional, rather than conventional. I will address what compositional data is and how to analyze this data below. 
 
 ##Dataset
@@ -24,25 +28,37 @@ output: html_document
 #####Each of these steps, and the arguments for making them will be outline during the replication itself. 
 
 #####1. Transform compositional data in isometric log-ratio (ilr) coordinates, and transform the ilr coordinates with the robust principle components transform. 
+
 #####2. Select a subset of components. 
-#####3. Use Monte Carlo Sampling to produce the chains.  
+#####3. Use Monte Carlo Sampling to produce the chains. 
+
 #####4. Check the chains. 
+
 #####5.Select chains for furthur analysis.
+
 #####6.  Combining the chains and switching them into their proper place. (The switching could not be done for reasons stated below; the chains should be checked for convergence but this is done outside of rstudio and so is not within this file).
+
 #####7. Calculate conditional probability that field sample is associated with the first probability density function in the finite mixture model. 
+
 #####8.  Use the conditional probabilities to calculate mean vectors, standard deviations, and correlation matrices for both probability density functions for the finite mixture model. 
+
 #####9. Plot the observed statistics (mean vectors, standard deviations, and correlation matrices). 
+
 #####10. Transform the observed data into simplex, which is compositional center and variation matrix. 
+
 #####11. Visualize the data by looking at compositional centers and variation matrices. Map the clusters in terms of their relationship with the probability density functions.  
 
 
 ##Compositional Data
+
 #####Compositional data is always postive and adds up to 100% and in geology is often derieved from counts and then scaled into the units of concentration. One of the problems with composition data is that because all the data is in the positive real space, measures such as variance are impractical. This particular issue is called the constraint problem and can be solved through a transformation. Currently the most robust, though statistically least understood, method for transformation is the isometric log-ratio transformation. Like most transformations, it is difficult to relate the results after the transformation has taken place with the original dataset. For this reason compositional data should be analyzed in the following way: (1) transform the data, (2) perform any desired statistical analyses, (3) analyze the results, usually by transforming back into the original units. 
+
 #####One important concept about compositional data that is central to geochemical work is subcompositional coherence. This essentially means that taking a part out of the whole does not change the value of the part. 
 
 
 
 ##Reanalysis
+
 #####First download and open the following packages: {colorspace}, {GcClust}, {ggplot}, {maps}, {mvtnorm}, {reshape2}, {robustbase}, {rstan}, {sp}, {shiny}, {shinystan}
 ```{r}
 library(colorspace)
@@ -57,13 +73,13 @@ library(sp)
 library(shiny)
 library(shinystan)
 ```
-#####As per the instructions within the supplementary information for the paper, 
+#####As per the instructions within the supplementary information for the paper, add dataset into gcData. 
 ```{r}
 gcData<-CoGeochemData 
 #in their instructions they save their data at each point in .dat files however I did not.
 #the data needs to be put into gcData because many of the functions (found on their github site here: https://github.com/USGS-R/GcClust/blob/master/R/GcClusterFunctions.R) require the dataset to be in a list called gcData. 
 ```
-
+#####The following is a map of the points where samples were taken. 
 ```{r}
 maps::map(database="state", regions = "Colorado", fill=FALSE)
 plot(gcData$concData, add = TRUE, pch =
@@ -74,13 +90,18 @@ plot(gcData$concData, add = TRUE, pch =
 ![This is their map:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Original_Map.jpg)
 
 #####Now we are going to transform that data from compositional data to isometric log-ratio coordinates and then transformed again by the robust principle components transform. 
+
 #####The first is done because normal statistics cannot be run on compositional data. The ilr transformation changes the data into a form that can be clustered. 
+
 #####The second transformation is done, because the authors assume that transforming ilr coordinates, this will make the coming model more stable. This  transformation does reduce the number of dimensions and allows us to select with compoents will be useful for selecting which principle components are useful in describing variation within the data. 
+
 ```{r}
 transData<-transformGcData(gcData)
 #I decided not to use the code head(transData) because when doing so, it seems the entire data comes up rather than just the beginning
 ```
+
 ####The following are two plots of the principle components. The first is a box plot and the second is a violin plot, ,though they show the same information. As with box plots, the lower end of the whisper shows the 25th percentile and the end of the upper whisker shows the 75th percentile. At this stage my plots and their plots look exactly the same. 
+
 ```{r}
 plotEdaDist(transData)
 ```
@@ -88,6 +109,7 @@ plotEdaDist(transData)
 ![These are their principle component plots:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Principle_Component_Plots.jpg)
 
 #####This is a correlation matrix of the principle components using the Pearson's correlation coefficient, which is like R-squared, so a -1 exactly negative correlation, a zero is correlation, and a +1 is complete positive correlation. Below that graph is the histogram of the correlations and sits in the range of very poor correlation in the both positive and negative directions. 
+
 ```{r}
 plotEdaCorr(transData)
 ```
@@ -101,6 +123,8 @@ plotEdaCorr(transData)
 plotEdaVar(transData)
 ```
 ![This is the authors' scree plot.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Scree_Plott.jpg)
+
+
 #####The authors wanted to select enough principle components to explain 75% to 95% of the data. To do this we could choose any principle component starting at 6 and going until 21, however they decided to select 22 components because that represents 96% of the data. I would probably have chosen 10 principle components however this is the first time that I have used a scree plot and I have visualized PCA very differently using other programs. 
 
 ```{r}
@@ -108,12 +132,14 @@ nPCs <- 22
 ```
 
 #####This next step is the addition of the Mixture Model from their github repository into the file. Since I have so little experience with Bayesian statistics and no knowledge of the stan programing language, I have yet to parse what their code is actually doing. However I will update this once I can figure it out, though that might be after this class is over.  
+
 ```{r}
 tmp<-normalizePath(path.package("GcClust"))
 load(paste(tmp, "\\stan\\MixtureModel.bin", sep=""))
 ```
 
 #####The following code is used to sample the chains, however I had to edit this code because R fun some of their code. This function is used in the samplePars function below. 
+
 ```{r}
 sampleFmm <- function(transData, nPCs, sm,
                       priorParams,
@@ -206,6 +232,7 @@ samplePars <- sampleFmm(transData, nPCs,sm, priorParams, nChainsPerCore = 5, nCo
 ```
 
 #####This is step 6, selecting which chains to use for furthur analyses. The problem we have is that the number of model parameters is very large; with 22 principle components the number of model parameters is 551, and that's just in one chain. To do this we will first plot the chains. 
+
 ```{r}
 plotSelectedTraces(samplePars)
 #I only included the picture of the first chain instead of all twenty (from the model I run prior to knitting) because adding all twenty seemed excessive 
@@ -220,9 +247,11 @@ plotSelectedTraces(samplePars)
 #####In my first chain, the mean has the second probability density function switched and on top while the standard deviation.
 
 #####Now we will examine each mode (that is each chain) and select the mode which best fits the data. According to the authors it is temping to select the mode with the highest log-likelihood however the modes should be selected on how well they explain the geochemical data, not how high their log-likelihood ratio is. 
+
 ```{r}
 plotPointStats(samplePars)
 ```
+
 ![These are the plots of the following vectors for the chains: mean, standard deviation, proportion, and log-likelihood. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Point_Statistics.jpg)
 
 #####In their point statistics the first and third chains are switched. 
@@ -234,17 +263,18 @@ plotPointStats(samplePars)
 #####I too decided to choose the first four chains. Their explanation about how to choose modes that best fit the geochemical data was unclear; while I look for furthur resources about how to choose the best modes for the given data I decided to follow their example. 
 
 
-#####Now set up a csv file with the chains you have selected. As stated above I decided to select the first four chains however X has the two chains switched. If I was following their example I would switch the chains so that all of the first probability density function information is "on top" of the second probability density function. However when attempting to perform the switch, the if then statement does not work. I have worked through the function and have yet to come up with a solution and so have replaced combineChains with combineChainz. 
+#####Now set up a csv file with the chains you have selected. As stated above I decided to select the first four chains however X has the two chains switched. If I was following their example I would switch the chains so that all of the first probability density function information is "on top" of the second probability density function. However when attempting to perform the switch, the if  statement does not work. I have worked through the function and have yet to come up with a solution and so have replaced combineChains with combineChainz which does not contain the if statement. 
+
 ```{r}
 f<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv")
 f    
 #Ellefsen and Smith give the format for this file in their guide to using GcClust.
 #Because I do not know which chains the mixing model will switch when I knit, and because the switching chains function does not work, this file is written assuming no switches need to take place. 
 ```
+
 ```{r}
 selectedChains<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv", header=TRUE, stringsAsFactors = FALSE)
 ```
-
 
 ```{r, eval=FALSE}
 combinedChains <- combineChains(samplePars,selectedChains)
@@ -260,29 +290,36 @@ combineChainz <- function(samplePars, selectedChains, procDir = ".") {
   return(rstan::sflist2stanfit(sfList))
   }
 }
-#I could not get the if statement to work, so while I figure that out I decided to create this new function combinedChaniz (with a z) and remove to if statement. This means that the first and fourth chains (which have been switched around) will not be in the correct order which will of course, change the analysis. 
 ```
+
 #####This step combines the chains together so that we can use them for the next step. 
+
 ```{r}
 combinedChains<-combineChainz(samplePars, selectedChains, procDir = ".")
 ```
+
 #####Now its time to check the model, which includes the mean vectors, the standard deviation vectors, and the correlation matrices for the two probability density functions. To check the model these are compared with the same statistics calculated from the principle components. 
 
 #####To begin checking the model, we need to calculate the conditional probability that a particular sample is associated with the first probability density function. These conditional probabilities, along with the principle components are used to calculate the mean vectors, standard deviation vectors, and correlation matrices necessary for checking our model. 
+
 ```{r}
 condProbs1 <- calcCondProbs1 (transData,nPCs, combinedChains)
 ```
+
 #####This matrix is calculated from the 22 principle components and the conditional probabilities. 
+
 ```{r}
 obsTestStats <- calcObsTestStats (transData,nPCs, condProbs1)
 ```
+
 #####To check the model we will compare the observed statistics (code right above this) with the replicated test statistics which we get from samples of the posterior probability density function. 
+
 #####In this study, the replicated test statistics are the same as the samples of the mean vectors, standard deviation vectors, and correlation coefficients that we combined together in CombinedChains.
+
 #####The following is a plot of the mean and standard deviation vectors. The red dot is the test statistic which should be close to the median, the vertical black line represents the 95% confidence interval. This figure also gives p value between the observed and replicated statistics. 
+
 ```{r}
 plotTMeanSd(combinedChains, obsTestStats)
-#neither of these plots look particularly off from the ones in the paper
-#explain my results here
 ```
 
 ![These are the plots of the vectors for both probability density functions fo model checking. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Model_Checking.jpg)
@@ -291,10 +328,11 @@ plotTMeanSd(combinedChains, obsTestStats)
 
 ![My plots for checking my models] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_plot_meansd.JPG)
 
-#####These plots look very similar for both runs, except that mine looks more squat. 
+#####These plots look very similar for both runs, except that mine looks more squat. This is surprising seeing as I did not switch any chains. 
 
 
 #####Now its time to compare the correlation matrices between the test statistics and the replicated statistics. 
+
 ```{r}
 plotTCorr(combinedChains, obsTestStats)
 #this set of four graphs looks very complex at first. Let's first concentrate on the first and third graphs which are fully coloured and have the red diagonal line. The top right triangle of each graph represents the correlation matrix from the principle components. The bottom left triangle represents the correlation matrix from the replicated samples. The comparison between the two is do they look the same? In their case their graphs do look the same across the red line. 
@@ -312,20 +350,25 @@ plotTCorr(combinedChains, obsTestStats)
 
 
 #####The values from combinedChains (mean vector, standard deviation vector, and correlation matrices) are transformed in simplex. Simplex here refers to an algorithm in linear programming which helps with optimization. 
+
 ```{r}
 simplexModPar <- backTransform (gcData,nPCs, transData, combinedChains)
 ```
+
 #####This is reording the elements. I would have done this alphabetically or perhaps in the order of major elements followed by trace elements. 
+
 ```{r}
 elementOrder <- c("Sr", "U", "Y", "Nb", "La", "Ce", "Th", "Na", "Al", "Ga","Be", "K", "Rb", "Ba", "Pb", "Cu", "Zn", "Mo", "Mg", "Sc", "Co", "Fe", "V", "Ni","Cr", "Ca", "P", "Ti", "Li", "Mn", "Sn","As", "Bi", "Cd", "In", "S", "Sb", "Tl","W", "EE")
 ```
 
 #####Using the elementOrder decided on above, median of the compositional centers for each element (the compositional centers is a vector) is plotted. This graph is useful because the units are in concentration, making it easy to compare to other datasets.
+
 #####In the graph there are two dots: one red and one blue. For a particular element the blue dot represents the median concentration as calculated by the first probability density function, and the red dot presents the median concentration as calculated by the second probability density function. In some of the elements it is easy to make out that there is a large difference between the two probability density functions, however some elements are right on top of each other according to this cale. It's for these reasons that the next transformation is done. 
 
 ```{r}
 plotCompMeans(simplexModPar, elementOrder)
 ```
+
 ![This is the plot of the compositional centers from Ellefsen and Smith](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Compositional_Centers.jpg)
 
 #####This is Ellefsen and Smith's compositional centers plot. Note how the values for Thallium and Antinomy are essentially on top of each other so indistinguishable.
@@ -335,14 +378,17 @@ plotCompMeans(simplexModPar, elementOrder)
 #####Note in my plot how the values for Rubidium, Potassium, and Barium are also instituguishable. 
 
 #####Using simplex again, the statistics are translated to allow us to tell the difference between the medians of the first probability density function versus the second. Ellefsen and Smith also want to add additional information to the plot involving the replicated statistics.
+
 ```{r}
 simplexStats <- calcSimplexStats(gcData)
 ```
 
 #####This plot has thhe translated data which is cleared to read and has the addition of the 95% confidence interval. As always, blue represents the first probaility density function and red represents the second. The only problem is is that with the transformation, we loose the units of concentration and so this data is less comparable to other data sets. 
+
 ```{r}
 plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 ```
+
 ![This is the plot of the translated compositional centers:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Translated_Compositional_Centers.jpg)
 
 #####Note how due to the translation, we can now distinguish between the two probability density functions for Thallium and Antimony. 
@@ -350,9 +396,13 @@ plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 ![This is my image of the translated compositional centers]
 
 #####Our next visualization is looking at the variation matrices for both probability density functions. Like the second and fourth graphs produced in the plotTCorr, the graph is symmetrical across the diagonal line. Unlike the plots in plotTCorr, Ellefsen and Smith decided to combine both variation matrices into one matrix. 
+
 #####The first probability density function is in the upper right triangle and the second is in the lower left triangle, which I think makes understanding the graphs more difficult. 
+
 #####This graph is the the standard deviation of the log-ratios between two elements. I've done similar analyses before however each element is plotted against each other individually which makes the graphs very large but its easier to see the variation (in the case I'm discussing a lot of variation looks like a cloud with no patterns; I'll try and insert an image of it in here however the computer we use might be in Greece still).
+
 #####In mine.... 
+
 ```{r}
 plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 ```
@@ -366,7 +416,9 @@ plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 #####In my variation matrix it looks like the upper triangle has a higher standard deviation than the lower triangle. 
 
 #####Let's graph the clusters onto the map of Colorado. There are four categories created.
+
 #####The association between the field sample and the probability distribution is calculated using the range of median probabilities calculated within the conditional probability matrix for the first probability density function (condProb1). The key to interpreting the map and the median probabilities associated with each category explained in the table below. 
+
 ```{r}
 m<-read.csv(file="C:/Users/Arora/Desktop/MapKey.csv")
 m    
@@ -384,6 +436,7 @@ plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
 
 
 ##Works Cited
+
 #####Ellefsen, Karl J. and David B. Smith 2016.  Manual hierarchical clustering of regional geochemical data using a Bayesian finite mixture model. Applied Jeochemistry 75: 200-2010.
 
 #####Ellefsen, Karl J. and David B Smith 2016. User's guide for GcClust - An R package for clustering of regional geochemical data: U.S.Geological Survey Techniques and Methods 7-C13, 21 p., http://dx.doi.org/10.3133/tm7c13
