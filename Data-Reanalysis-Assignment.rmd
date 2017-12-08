@@ -210,7 +210,12 @@ plotSelectedTraces(samplePars)
 ```
 
 ![These are the plot traces for the first chain.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Trace_Chain_1.jpg)
-#####This is their image for the first chain. 
+
+#####This is their image for the first chain.In the standard deviation vector, the second probabiity density function is switched with the first. 
+
+![This is the image for my first chain/](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_chain_1.JPG)
+
+#####In my first chain, the mean has the second probability density function switched and on top while the standard deviation.
 
 #####Now we will examine each mode (that is each chain) and select the mode which best fits the data. According to the authors it is temping to select the mode with the highest log-likelihood however the modes should be selected on how well they explain the geochemical data, not how high their log-likelihood ratio is. 
 ```{r}
@@ -218,8 +223,11 @@ plotPointStats(samplePars)
 ```
 ![These are the plots of the following vectors for the chains: mean, standard deviation, proportion, and log-likelihood. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Point_Statistics.jpg)
 
+#####In their point statistics the first and third chains are switched. 
 
-#####As you can see our plots are slightly different. The key to understanding the "switch" that they discuss in their supplementary data is to understand that the first probability density function is blue and the second probability density function is red. To complete the analysis they have outline below the blue chains should be on top and the red chains should be on the bottom. 
+![My plots for the vectors for the chains] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_point_stats.JPG)
+
+#####In my plot the second and fourth chains are switched and would need to be switched back so that the second probability density function (which is red) is below the first probability density function (which is blue). 
 
 #####I too decided to choose the first four chains. Their explanation about how to choose modes that best fit the geochemical data was unclear; while I look for furthur resources about how to choose the best modes for the given data I decided to follow their example. 
 
@@ -228,7 +236,8 @@ plotPointStats(samplePars)
 ```{r}
 f<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv")
 f    
-#this file is based on
+#Ellefsen and Smith give the format for this file in their guide to using GcClust.
+#Because I do not know which chains the mixing model will switch when I knit, and because the switching chains function does not work, this file is written assuming no switches need to take place. 
 ```
 ```{r}
 selectedChains<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv", header=TRUE, stringsAsFactors = FALSE)
@@ -274,7 +283,14 @@ plotTMeanSd(combinedChains, obsTestStats)
 #explain my results here
 ```
 
-![These are the plots of the vectors for both probabilityh density functions fo model checking. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Model_Checking.jpg)
+![These are the plots of the vectors for both probability density functions fo model checking. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Model_Checking.jpg)
+
+#####This is Ellefsen and Smith's plots for checking their models. 
+
+![My plots for checking my models] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_plot_meansd.JPG)
+
+#####These plots look very similar for both runs, except that mine looks more squat. 
+
 
 #####Now its time to compare the correlation matrices between the test statistics and the replicated statistics. 
 ```{r}
@@ -283,7 +299,14 @@ plotTCorr(combinedChains, obsTestStats)
 #The two blue graphs which only fill the top right portion of the graph present the p-values. However these values will be mirror across the diagonal line so both sides are not shown. In this particular analysis, the largest possible posterior predictive p-value is 0.5 and so in their graphs the p-values are, as they state, moderate to large. 
 ```
 
-![These are the plots of the correlation matrices for both probabilityh density functions fo model checking. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Model_Check_Matrices.jpg)
+![These are the plots of the correlation matrices for both probability density functions fo model checking. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Model_Check_Matrices.jpg)
+
+#####This is their correlation matrices for the probability density functions. For plots A and C, the values look similar across the red line. For plots B and D most of the squares are dark, showing that high p-values for each probability density function. 
+
+![Here are my plots for the correlation matrices] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_correlation_matrices.JPG). 
+
+#####My plots look very similar to their with the plots on the left looking similar across the red line and moderate to high p values for the right two graphs. 
+
 
 
 #####The values from combinedChains (mean vector, standard deviation vector, and correlation matrices) are transformed in simplex. Simplex here refers to an algorithm in linear programming which helps with optimization. 
@@ -301,7 +324,13 @@ elementOrder <- c("Sr", "U", "Y", "Nb", "La", "Ce", "Th", "Na", "Al", "Ga","Be",
 ```{r}
 plotCompMeans(simplexModPar, elementOrder)
 ```
-![This is the plot of the compositional centers from Ellefsen and Smith:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Compositional_Centers.jpg)
+![This is the plot of the compositional centers from Ellefsen and Smith](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Compositional_Centers.jpg)
+
+#####This is Ellefsen and Smith's compositional centers plot. Note how the values for Thallium and Antinomy are essentially on top of each other so indistinguishable.
+
+![This is my plot of the compositional centers] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_comp_means.JPG)
+
+#####Note in my plot how the values for Rubidium, Potassium, and Barium are also instituguishable. 
 
 #####Using simplex again, the statistics are translated to allow us to tell the difference between the medians of the first probability density function versus the second. Ellefsen and Smith also want to add additional information to the plot involving the replicated statistics.
 ```{r}
@@ -314,16 +343,25 @@ plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 ```
 ![This is the plot of the translated compositional centers:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Translated_Compositional_Centers.jpg)
 
+#####Note how due to the translation, we can now distinguish between the two probability density functions for Thallium and Antimony. 
+
+![This is my image of the translated compositional centers]
+
 #####Our next visualization is looking at the variation matrices for both probability density functions. Like the second and fourth graphs produced in the plotTCorr, the graph is symmetrical across the diagonal line. Unlike the plots in plotTCorr, Ellefsen and Smith decided to combine both variation matrices into one matrix. 
 #####The first probability density function is in the upper right triangle and the second is in the lower left triangle, which I think makes understanding the graphs more difficult. 
 #####This graph is the the standard deviation of the log-ratios between two elements. I've done similar analyses before however each element is plotted against each other individually which makes the graphs very large but its easier to see the variation (in the case I'm discussing a lot of variation looks like a cloud with no patterns; I'll try and insert an image of it in here however the computer we use might be in Greece still).
-#####In mine.....In theirs, it looks like the variance is smaller in the second probability density function than in the first. 
+#####In mine.... 
 ```{r}
 plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 ```
 
 ![This is the authors' plot of the variation correlation matrices:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Variation_Matrix.jpg)
 
+#####In theirs variation matrix it looks like the variance is smaller in the second probability density function than in the first.
+
+![My variation matrix] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_variation_correlation_matrix.JPG)
+
+#####In my variation matrix it looks like the upper triangle has a higher standard deviation than the lower triangle. 
 
 #####Let's graph the clusters onto the map of Colorado. There are four categories created.
 #####The association between the field sample and the probability distribution is calculated using the range of median probabilities calculated within the conditional probability matrix for the first probability density function (condProb1). The key to interpreting the map and the median probabilities associated with each category explained in the table below. 
@@ -334,8 +372,15 @@ map(database = "state", regions = "colorado", fill = TRUE, col = "grey95", borde
 map.axes()
 plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
 ```
-#####Glancing at mine there is mostly blue and red, and from their plot most of the points look either strongly associated with the first probability density function or moderately associated with the second. In this case our plots are very similar. 
 ![This is their map of mode one:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Map_Mode.jpg)
+
+#####Their mode map is mostly blue and red. 
+
+![My map mode plot] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_mode_map.JPG)
+
+#####Like their map, mine is also mostly blue and red. This means both our points are either strongly associated with the first probability function or moderately associated with the second. 
+
+
 ##Works Cited
 #####Ellefsen, Karl J. and David B. Smith 2016.  Manual hierarchical clustering of regional geochemical data using a Bayesian finite mixture model. Applied Jeochemistry 75: 200-2010.
 
