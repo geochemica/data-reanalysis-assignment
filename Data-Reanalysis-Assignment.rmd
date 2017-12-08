@@ -206,6 +206,7 @@ samplePars <- sampleFmm(transData, nPCs,sm, priorParams, nChainsPerCore = 5, nCo
 #####This is step 6, selecting which chains to use for furthur analyses. The problem we have is that the number of model parameters is very large; with 22 principle components the number of model parameters is 551, and that's just in one chain. To do this we will first plot the chains. 
 ```{r}
 plotSelectedTraces(samplePars)
+#I only included the picture of the first chain instead of all twenty because twenty seemed excessive 
 ```
 
 ![#These are the plot traces for the first chain.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Trace_Chain_1.jpg)
@@ -335,4 +336,10 @@ plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
 #####Glancing at mine there is mostly blue and red, and from their plot most of the points look either strongly associated with the first probability density function or moderately associated with the second. In this case our plots are very similar. 
 ![This is their map of mode one:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Map_Mode.jpg)
 ##Works Cited
+#####Ellefsen, Karl J. and David B. Smith 2016.  Manual hierarchical clustering of regional geochemical data using a Bayesian finite mixture model. Applied Jeochemistry 75: 200-2010.
 
+#####Ellefsen, Karl J. and David B Smith 2016. User's guide for GcClust - An R package for clustering of regional geochemical data: U.S.Geological Survey Techniques and Methods 7-C13, 21 p., http://dx.doi.org/10.3133/tm7c13
+
+#####Kabacoff, Robert I. 2015.  R in Action: Data analysis and graphics with R, Second Edition.Shelter Island, Manning. 
+
+#####Pawlosky-Ghan, Vera, J.J. Egozcue, and Raimon Tolosana-Delgado 2012. Modelinng and analysis of compositional data. Chichester, john Wiley and Sons, Ltd.
