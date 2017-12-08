@@ -89,6 +89,8 @@ plot(gcData$concData, add = TRUE, pch =
 
 ![This is their map:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Original_Map.jpg)
 
+#####This is the map Ellefsen and Smith included in their paper. 
+
 #####Now we are going to transform that data from compositional data to isometric log-ratio coordinates and then transformed again by the robust principle components transform. 
 
 #####The first is done because normal statistics cannot be run on compositional data. The ilr transformation changes the data into a form that can be clustered. 
@@ -108,7 +110,9 @@ plotEdaDist(transData)
 
 ![These are their principle component plots:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Principle_Component_Plots.jpg)
 
-#####This is a correlation matrix of the principle components using the Pearson's correlation coefficient, which is like R-squared, so a -1 exactly negative correlation, a zero is correlation, and a +1 is complete positive correlation. Below that graph is the histogram of the correlations and sits in the range of very poor correlation in the both positive and negative directions. 
+#####These are the two plots which were included in the paper. 
+
+#####This is a correlation matrix of the principle components using the Pearson's correlation coefficient, which is like R-squared, so a -1 exactly negative correlation, a zero is correlation, and a +1 is complete positive correlation. However if this graph works like the same type of graph below (that graph is the matrices used for model checking), then the graph should look very similar across the red diagonal, and the value of the coefficient is not really taken into account.  
 
 ```{r}
 plotEdaCorr(transData)
@@ -116,6 +120,7 @@ plotEdaCorr(transData)
 
 ![This is there correlation matrix and histogram for the principle components.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Correlation_Matrix_for_PCA.jpg)
 
+#####This is their correlation matrix and their matrix looks very similar across the red diagonal. The histogram of the correlations and sits in the range of very poor correlation in the both positive and negative directions.
 
 #####Now we will analyze a scree plot. In R in Action a Scree plot is described as one way of determing the number of principle components to keep for analysis. While Ellefsen and Smith (2016) decide to use add up principle components until they come up with a certain value, a scree plot is uses a matrix of Eigenvalues versus the component. Depending on the type of scree test performed, the user is either looking for a bend or "elbow" in the graph or the number of components where the eigenvalue is less than one. Because the eigenvalues were not plotted, instead we will look for the dip to determine the number of princpal componetns as well as the cumulative variance we want to account for.And while choosing 39 principle components will describe all the data, we perform principle components analysis to essentially reduce the number of variables. 
 
@@ -124,8 +129,7 @@ plotEdaVar(transData)
 ```
 ![This is the authors' scree plot.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Scree_Plott.jpg)
 
-
-#####The authors wanted to select enough principle components to explain 75% to 95% of the data. To do this we could choose any principle component starting at 6 and going until 21, however they decided to select 22 components because that represents 96% of the data. I would probably have chosen 10 principle components however this is the first time that I have used a scree plot and I have visualized PCA very differently using other programs. 
+#####This is the scree plot presented in the paper. The authors wanted to select enough principle components to explain 75% to 95% of the data. To do this we could choose any principle component starting at 6 and going until 21, however they decided to select 22 components because that represents 96% of the data. I would probably have chosen 10 principle components however this is the first time that I have used a scree plot and I have visualized PCA very differently using other programs. 
 
 ```{r}
 nPCs <- 22
