@@ -87,7 +87,7 @@ plot(gcData$concData, add = TRUE, pch =
 #their original code had fill, a white border, and red points however I could not get that particular code to work so I edited so the points were back and the fill was removed. 
 ```
 
-![This is their map:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Original_Map.jpg)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Original_Map.jpg)
 
 #####This is the map Ellefsen and Smith included in their paper. 
 
@@ -108,7 +108,7 @@ transData<-transformGcData(gcData)
 plotEdaDist(transData)
 ```
 
-![These are their principle component plots:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Principle_Component_Plots.jpg)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Principle_Component_Plots.jpg)
 
 #####These are the two plots which were included in the paper. 
 
@@ -118,7 +118,7 @@ plotEdaDist(transData)
 plotEdaCorr(transData)
 ```
 
-![This is there correlation matrix and histogram for the principle components.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Correlation_Matrix_for_PCA.jpg)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Correlation_Matrix_for_PCA.jpg)
 
 #####This is their correlation matrix and their matrix looks very similar across the red diagonal. The histogram of the correlations and sits in the range of very poor correlation in the both positive and negative directions.
 
@@ -127,7 +127,7 @@ plotEdaCorr(transData)
 ```{r}
 plotEdaVar(transData)
 ```
-![This is the authors' scree plot.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Scree_Plott.jpg)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Scree_Plott.jpg)
 
 #####This is the scree plot presented in the paper. The authors wanted to select enough principle components to explain 75% to 95% of the data. To do this we could choose any principle component starting at 6 and going until 21, however they decided to select 22 components because that represents 96% of the data. I would probably have chosen 10 principle components however this is the first time that I have used a scree plot and I have visualized PCA very differently using other programs. 
 
@@ -242,11 +242,11 @@ plotSelectedTraces(samplePars)
 #I only included the picture of the first chain instead of all twenty (from the model I run prior to knitting) because adding all twenty seemed excessive 
 ```
 
-![These are the plot traces for the first chain.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Trace_Chain_1.jpg)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Trace_Chain_1.jpg)
 
 #####This is their image for the first chain.In the standard deviation vector, the second probabiity density function is switched with the first. 
 
-![This is the image for my first chain/](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_chain_1.JPG)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_chain_1.JPG)
 
 #####In my first chain, the mean has the second probability density function switched and on top while the standard deviation.
 
@@ -256,11 +256,11 @@ plotSelectedTraces(samplePars)
 plotPointStats(samplePars)
 ```
 
-![These are the plots of the following vectors for the chains: mean, standard deviation, proportion, and log-likelihood. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Point_Statistics.jpg)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Point_Statistics.jpg)
 
 #####In their point statistics the first and third chains are switched. 
 
-![My plots for the vectors for the chains] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_point_stats.JPG)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_point_stats.JPG)
 
 #####In my plot the second and fourth chains are switched and would need to be switched back so that the second probability density function (which is red) is below the first probability density function (which is blue). 
 
@@ -326,11 +326,11 @@ obsTestStats <- calcObsTestStats (transData,nPCs, condProbs1)
 plotTMeanSd(combinedChains, obsTestStats)
 ```
 
-![These are the plots of the vectors for both probability density functions fo model checking. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Model_Checking.jpg)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Model_Checking.jpg)
 
 #####This is Ellefsen and Smith's plots for checking their models. 
 
-![My plots for checking my models] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_plot_meansd.JPG)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_plot_meansd.JPG)
 
 #####These plots look very similar for both runs, except that mine looks more squat. This is surprising seeing as I did not switch any chains. 
 
@@ -343,11 +343,11 @@ plotTCorr(combinedChains, obsTestStats)
 #The two blue graphs which only fill the top right portion of the graph present the p-values. However these values will be mirror across the diagonal line so both sides are not shown. In this particular analysis, the largest possible posterior predictive p-value is 0.5 and so in their graphs the p-values are, as they state, moderate to large. 
 ```
 
-![These are the plots of the correlation matrices for both probability density functions fo model checking. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Model_Check_Matrices.jpg)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Model_Check_Matrices.jpg)
 
 #####This is their correlation matrices for the probability density functions. For plots A and C, the values look similar across the red line. For plots B and D most of the squares are dark, showing that high p-values for each probability density function. 
 
-![Here are my plots for the correlation matrices] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_correlation_matrices.JPG). 
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_correlation_matrices.JPG). 
 
 #####My plots look very similar to their with the plots on the left looking similar across the red line and moderate to high p values for the right two graphs. 
 
@@ -373,11 +373,11 @@ elementOrder <- c("Sr", "U", "Y", "Nb", "La", "Ce", "Th", "Na", "Al", "Ga","Be",
 plotCompMeans(simplexModPar, elementOrder)
 ```
 
-![This is the plot of the compositional centers from Ellefsen and Smith](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Compositional_Centers.jpg)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Compositional_Centers.jpg)
 
 #####This is Ellefsen and Smith's compositional centers plot. Note how the values for Thallium and Antinomy are essentially on top of each other so indistinguishable.
 
-![This is my plot of the compositional centers] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_comp_means.JPG)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_comp_means.JPG)
 
 #####Note in my plot how the values for Rubidium, Potassium, and Barium are also instituguishable. 
 
@@ -393,11 +393,11 @@ simplexStats <- calcSimplexStats(gcData)
 plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 ```
 
-![This is the plot of the translated compositional centers:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Translated_Compositional_Centers.jpg)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Translated_Compositional_Centers.jpg)
 
 #####Note how due to the translation, we can now distinguish between the two probability density functions for Thallium and Antimony. 
 
-![This is my image of the translated compositional centers](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_comp_centers.JPG)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_comp_centers.JPG)
 
 #####Our next visualization is looking at the variation matrices for both probability density functions. Like the second and fourth graphs produced in the plotTCorr, the graph is symmetrical across the diagonal line. Unlike the plots in plotTCorr, Ellefsen and Smith decided to combine both variation matrices into one matrix. 
 
@@ -411,11 +411,11 @@ plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 ```
 
-![This is the authors' plot of the variation correlation matrices:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Variation_Matrix.jpg)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Variation_Matrix.jpg)
 
 #####In theirs variation matrix it looks like the variance is smaller in the second probability density function than in the first.
 
-![My variation matrix] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_variation_correlation_matrix.JPG)
+![] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_variation_correlation_matrix.JPG)
 
 #####In my variation matrix it looks like the upper triangle has a higher standard deviation than the lower triangle. 
 
@@ -430,11 +430,11 @@ map(database = "state", regions = "colorado", fill = TRUE, col = "grey95", borde
 map.axes()
 plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
 ```
-![This is their map of mode one:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Map_Mode.jpg)
+![](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Map_Mode.jpg)
 
 #####Their mode map is mostly blue and red. 
 
-![My map mode plot] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_mode_map.JPG)
+![] (https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_mode_map.JPG)
 
 #####Like their map, mine is also mostly blue and red. This means both our points are either strongly associated with the first probability function or moderately associated with the second. 
 
