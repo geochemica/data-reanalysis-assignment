@@ -397,7 +397,7 @@ plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 
 #####Note how due to the translation, we can now distinguish between the two probability density functions for Thallium and Antimony. 
 
-![This is my image of the translated compositional centers]
+![This is my image of the translated compositional centers](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_comp_centers.JPG)
 
 #####Our next visualization is looking at the variation matrices for both probability density functions. Like the second and fourth graphs produced in the plotTCorr, the graph is symmetrical across the diagonal line. Unlike the plots in plotTCorr, Ellefsen and Smith decided to combine both variation matrices into one matrix. 
 
