@@ -209,7 +209,8 @@ plotSelectedTraces(samplePars)
 #I only included the picture of the first chain instead of all twenty (from the model I run prior to knitting) because adding all twenty seemed excessive 
 ```
 
-![#These are the plot traces for the first chain.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Trace_Chain_1.jpg)
+![These are the plot traces for the first chain.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Trace_Chain_1.jpg)
+#####This is their image for the first chain. 
 
 #####Now we will examine each mode (that is each chain) and select the mode which best fits the data. According to the authors it is temping to select the mode with the highest log-likelihood however the modes should be selected on how well they explain the geochemical data, not how high their log-likelihood ratio is. 
 ```{r}
