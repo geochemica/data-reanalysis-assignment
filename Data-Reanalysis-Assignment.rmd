@@ -93,7 +93,7 @@ plotEdaCorr(transData)
 ![This is there correlation matrix and histogram for the principle components.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Correlation_Matrix_for_PCA.jpg)
 
 
-#####Now we will analyze a scree plot. In R in Action a Scree plot is described as:(ADD HERE). Using the major dip in the scree plot, we can determine the number of principle components. We want to choose enough principle components to describe as much of the data as possible however we want to exclude as much noise from the data as possible. And while choosing 39 principle components will describe all the data, we perform principle components analysis to essentially reduce the number of variables. 
+#####Now we will analyze a scree plot. In R in Action a Scree plot is described as one way of determing the number of principle components to keep for analysis. While Ellefsen and Smith (2016) decide to use add up principle components until they come up with a certain value, a scree plot is uses a matrix of Eigenvalues versus the component. Depending on the type of scree test performed, the user is either looking for a bend or "elbow" in the graph or the number of components where the eigenvalue is less than one. Because the eigenvalues were not plotted, instead we will look for the dip to determine the number of princpal componetns as well as the cumulative variance we want to account for.And while choosing 39 principle components will describe all the data, we perform principle components analysis to essentially reduce the number of variables. 
 
 ```{r}
 plotEdaVar(transData)
@@ -206,7 +206,7 @@ samplePars <- sampleFmm(transData, nPCs,sm, priorParams, nChainsPerCore = 5, nCo
 #####This is step 6, selecting which chains to use for furthur analyses. The problem we have is that the number of model parameters is very large; with 22 principle components the number of model parameters is 551, and that's just in one chain. To do this we will first plot the chains. 
 ```{r}
 plotSelectedTraces(samplePars)
-#I only included the picture of the first chain instead of all twenty because twenty seemed excessive 
+#I only included the picture of the first chain instead of all twenty (from the model I run prior to knitting) because adding all twenty seemed excessive 
 ```
 
 ![#These are the plot traces for the first chain.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Trace_Chain_1.jpg)
@@ -285,7 +285,7 @@ plotTCorr(combinedChains, obsTestStats)
 ![These are the plots of the correlation matrices for both probabilityh density functions fo model checking. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Model_Check_Matrices.jpg)
 
 
-#####The values from combinedChains (mean vector, standard deviation vector, and correlation matrices) are transformed in simplex. I continue to investigate why this transformation needs to take place and what happens. 
+#####The values from combinedChains (mean vector, standard deviation vector, and correlation matrices) are transformed in simplex. Simplex here refers to an algorithm in linear programming which helps with optimization. 
 ```{r}
 simplexModPar <- backTransform (gcData,nPCs, transData, combinedChains)
 ```
@@ -309,7 +309,7 @@ simplexStats <- calcSimplexStats(gcData)
 
 #####This plot has thhe translated data which is cleared to read and has the addition of the 95% confidence interval. As always, blue represents the first probaility density function and red represents the second. The only problem is is that with the transformation, we loose the units of concentration and so this data is less comparable to other data sets. 
 ```{r}
-plotTransCompMeans( simplexModPar,simplexStats, gcData, elementOrder)
+plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 ```
 ![This is the plot of the translated compositional centers:](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Translated_Compositional_Centers.jpg)
 
@@ -343,3 +343,5 @@ plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
 #####Kabacoff, Robert I. 2015.  R in Action: Data analysis and graphics with R, Second Edition.Shelter Island, Manning. 
 
 #####Pawlosky-Ghan, Vera, J.J. Egozcue, and Raimon Tolosana-Delgado 2012. Modelinng and analysis of compositional data. Chichester, john Wiley and Sons, Ltd.
+
+#####Simplex algorith. Wikipedia, accessed December 7, 2017. https://en.wikipedia.org/wiki/Simplex_algorithm
