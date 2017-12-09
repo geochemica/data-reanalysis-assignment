@@ -1,7 +1,7 @@
 ---
 title: "Data-Reanalysis-Assignment"
 author: "Arora"
-date: "December 9, 2017"
+date: "December 3, 2017"
 output: html_document
 ---
 #Replication of Ellefsen and Smith 2016
@@ -253,10 +253,10 @@ plotSelectedTraces(samplePars)
 #I only included the picture of the first chain instead of all twenty (from the model I run prior to knitting) because adding all twenty seemed excessive 
 ```
 
-![This is their image for the first chain. In the standard deviation vector, the second probabiity density function is switched with the first. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Trace_Chain_1.jpg)
+![This is their image for the first chain. In the standard deviation vector, the second probabiity density function is switched with the first. In their image the two lines never cross each other. If the red and blue lines crossed, they would need to change the posterior probability density function.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Trace_Chain_1.jpg)
 
 
-![In my first chain, the mean has the second probability density function switched and on top while the standard deviation.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_chain_1.JPG)
+![In my first chain, the mean has the second probability density function switched and on top while the standard deviation has the second probability density function on top. This chain should be fine to analyze because the lines don't cross.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_chain_1.JPG)
 
 #####Next check each chain to select the model which best fits the data. While it is tempting to select the model with the highest log-likelihood ratio, the modes should be selected by how well they explain previous geochemical knowledge. However the authors do not explain how the models they selected best fit their previous geological knowledge about soils in Colorado
 
