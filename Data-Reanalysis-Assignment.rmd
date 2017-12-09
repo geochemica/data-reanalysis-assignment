@@ -397,7 +397,7 @@ plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 ![Note how due to the translation, we can now distinguish between the two probability density functions for thallium and antimony](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Translated_Compositional_Centers.jpg)
  
 
-![In my the centers for rhodium, potassium, and barium are no longer right on top of each other however because the units of concentration have been removed, this plot isn't useful when trying to compare this dataset with others.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_chain_1.JPG)
+![In my the centers for rhodium, potassium, and barium are no longer right on top of each other however because the units of concentration have been removed, this plot isn't useful when trying to compare this dataset with others.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/translated_comp_centers.jpg)
 
 #####The next visualization is the variation matrices for each probability density function. The variation matrix for the first probability density function is the upper right triangle and the matrix for the second is in the lower left triangle. This plot shows the standard deviation of the log-ratios between two elements. 
 
