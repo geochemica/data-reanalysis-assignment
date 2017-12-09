@@ -385,7 +385,7 @@ plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
 ![Their mode map is mostly blue and red. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Map_Mode.jpg)
 
 
-![[Like their map, mine is also mostly blue and red. This means both our points are either strongly associated with the first probability function or moderately associated with the second. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_mode_map.JPG)
+![Like their map, mine is also mostly blue and red. This means both our points are either strongly associated with the first probability function or moderately associated with the second. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_mode_map.JPG)
 
 
 ##Works Cited
