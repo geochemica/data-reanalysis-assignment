@@ -49,7 +49,7 @@ output: html_document
 
 ##Compositional Data
 
-#####Compositional data is always postive and adds up to 100% and in geology is often derieved from counts data which is scaled into the units of concentration. One of the problems with composition data is that because all the data is in the positive real space, measures such as variance are considered impractical. This particular issue is called the constraint problem and can be solved through a transformation. Currently the most robust, though statistically least understood, method for transformation is the isometric log-ratio transformation. Like most transformations, it is difficult to relate the results after the transformation has taken place with the original dataset. For this reason compositional data should be analyzed in the following way: (1) transform the data, (2) perform any desired statistical analyses, (3) analyze the results, usually by transforming back into the original units. 
+#####Compositional data is always postive and adds up to 100% and in geology is often derieved from counts data which is scaled into the units of concentration. One of the problems with compositional data is that because all the data is in the positive real space, measures such as variance are considered impractical. This particular issue is called the constraint problem and can be solved through a transformation. Currently the most robust though statistically least understood method for transformation is the isometric log-ratio transformation. Like most transformations, it is difficult to relate the results after the transformation has taken place with the original dataset. For this reason compositional data should be analyzed in the following way: (1) transform the data, (2) perform any desired statistical analyses, (3) analyze the results, usually by transforming back into the original units. 
 
 #####One important concept about compositional data that is central to geochemical work is subcompositional coherence. This essentially means that taking a part out of the whole does not change the value of the part. 
 
@@ -85,16 +85,16 @@ plot(gcData$concData, add = TRUE, pch =
 
 ![This is the map Ellefsen and Smith included in their paper. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Original_Map.jpg)
 
-#####Step 1: Transform the concentration data first by isometric log-ratio (ilr) transform and then the robust principle components transform. The ilr transform changes the data into a form that can be clustered. The robust principle componetns transform is done because the authors assume it will make the following model more stable by reducing the number of dimensions. Both transformations occur within the transformGcData function. 
+#####Step 1: Transform the concentration data first by isometric log-ratio (ilr) transform and then the robust principle components transform. The ilr transform changes the data into a form that can be clustered. The robust principle components transform is done because the authors assume it will make the following model more stable by reducing the number of dimensions. Both transformations occur within the transformGcData function. 
 
 ```{r}
 transData<-transformGcData(gcData)
 #I decided not to use the code head(transData) because when doing so, it seems the entire data comes up rather than just the beginning
 ```
 
-#####Step 2: Select the number of principle components. The authors present several plots to determine the number of principle components they will use however in the end decide to use the cumulative method, which is when the analyst keeps adding principle components until a certain percentage of the dataset is selected for. For the purpose of replicating their study I have followed their example. 
+#####Step 2: Select the number of principle components. The authors present several plots to determine the number of principle components they will use. However, they decide to use the cumulative method, which is when the analyst keeps adding principle components until a certain percentage of the dataset is selected for. For the purpose of replicating their study I have followed their example. 
 
-####The following are two plots of the principle components. The first is a box plot and the second is a violin plot, ,though they show the same information. As with box plots, the lower end of the whisper shows the 25th percentile and the end of the upper whisker shows the 75th percentile. At this stage my plots and their plots look exactly the same. 
+#####The following are two plots of the principle components. The first is a box plot and the second is a violin plot, ,though they show the same information. As with box plots, the lower end of the whisper shows the 25th percentile and the end of the upper whisker shows the 75th percentile. At this stage my plots and their plots look exactly the same. 
 
 ```{r}
 plotEdaDist(transData)
