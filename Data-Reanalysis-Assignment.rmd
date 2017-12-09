@@ -113,12 +113,12 @@ plotEdaCorr(transData)
 #####I also did not find these graphs helpful when attempting to determine principle components. When I begin to edit the functions and add in my own dataset, I will disregard these graphs. 
 
 
-#####Now we will analyze a scree plot. In R in Action a Scree plot is described as one way of determing the number of principle components to keep for analysis. While Ellefsen and Smith (2016) decide to use add up principle components until they come up with a certain value, a scree plot is uses a matrix of Eigenvalues versus the component. Depending on the type of scree test performed, the user is either looking for a bend or "elbow" in the graph or the number of components where the eigenvalue is less than one. Because the eigenvalues were not plotted, instead we will look for the dip to determine the number of princpal componetns as well as the cumulative variance we want to account for.And while choosing 39 principle components will describe all the data, we perform principle components analysis to essentially reduce the number of variables. 
+#####This is the scree plot. In R in Action a scree plot is described as one way of determing the number of principle components to keep for analysis. While Ellefsen and Smith (2016) decide to use add up principle components until they come up with a certain value, a scree plot is uses a matrix of Eigenvalues versus the component. Depending on the type of scree test performed, the user is either looking for a bend or "elbow" in the graph or the number of components where the eigenvalue is less than one. Because the eigenvalues were not plotted, instead we will look for the dip to determine the number of princpal componetns as well as the cumulative variance we want to account for.And while choosing 39 principle components will describe all the data, we perform principle components analysis to essentially reduce the number of variables. 
 
 ```{r}
 plotEdaVar(transData)
 ```
-![This is the scree plot presented in the paper. The authors wanted to select enough principle components to explain 75% to 95% of the data. To do this we could choose any principle component starting at 6 and going until 21, however they decided to select 22 components because that represents 96% of the data. I would probably have chosen 10 principle components. I decided to use 22 principle components after I had to edit some of their functions and wanted to see how my results would differ if I kept everything else the same; I plan to see how changing the number of principle components does change the analysis however running the model below takes upwards of two hours on my compter.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Scree_Plott.jpg)
+![This is the scree plot presented in the paper. The authors wanted to select enough principle components to explain 75% to 95% of the data. To do this one could choose any principle component starting at 6 and going until 21, however they decided to select 22 components because that represents 96% of the data. I would probably have chosen 10 principle components. I decided to use 22 principle components after I had to edit some of their functions and wanted to see how my results would differ if I kept everything else the same; I plan to see how changing the number of principle components does change the analysis however running the model below takes upwards of two hours on my compter.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Scree_Plott.jpg)
 
 ```{r}
 nPCs <- 22
@@ -369,7 +369,7 @@ plotCompMeans(simplexModPar, elementOrder)
 simplexStats <- calcSimplexStats(gcData)
 ```
 
-#####This plot has thhe translated data which is cleared to read and has the addition of the 95% confidence interval. As always, blue represents the first probaility density function and red represents the second. The only problem is is that with the transformation, we loose the units of concentration and so this data is less comparable to other data sets. 
+#####This plot has thhe translated data which is cleared to read and has the addition of the 95% confidence interval. As always, blue represents the first probaility density function and red represents the second. The only problem is that with the transformation the units of concentration are lost.  
 
 ```{r, eval=FALSE}
 plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
@@ -378,14 +378,9 @@ plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 ![Note how due to the translation, we can now distinguish between the two probability density functions for Thallium and Antimony](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Translated_Compositional_Centers.jpg)
  
 
-![In my ]()
+![In my the centers for Rhodium, Potassium, and Barium are no longer right on top of each other however because the units of concentration have been removed, this plot isn't useful when trying to compare this dataset with others.]()
 
-#####Our next visualization is looking at the variation matrices for both probability density functions. Like the second and fourth graphs produced in the plotTCorr, the graph is symmetrical across the diagonal line. Unlike the plots in plotTCorr, Ellefsen and Smith decided to combine both variation matrices into one matrix. 
-
-#####The first probability density function is in the upper right triangle and the second is in the lower left triangle, which I think makes understanding the graphs more difficult. 
-
-#####This graph is the the standard deviation of the log-ratios between two elements. I've done similar analyses before however each element is plotted against each other individually which makes the graphs very large but its easier to see the variation (in the case I'm discussing a lot of variation looks like a cloud with no patterns; I'll try and insert an image of it in here however the computer we use might be in Greece still).
-.. 
+#####The next visualization is the variation matrices for eacch probability density function. The variation matrix for the first probability density function is the upper right triangle and the matrix for the second is in the lower left triangle. This plot shows the standard deviation of the log-ratios between two elements. 
 
 ```{r, eval=FALSE}
 plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
@@ -394,7 +389,6 @@ plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 ![In theirs variation matrix it looks like the variance is smaller in the second probability density function than in the first.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Variation_Matrix.jpg)
 
 ![In my variation matrix it looks like the upper triangle has a higher standard deviation than the lower triangle.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_variation_correlation_matrix.JPG)
-
 
 
 #####The final visualization is the graph of the association between the field samples and the conditional probability matrix from the first probability density function (condProb1). The values used to assign the four categories are the median probabilities calculated from condProb1. The csv file below contains the key to interpreting the map and the median probabilities associated with each category. 
