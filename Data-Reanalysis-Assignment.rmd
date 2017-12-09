@@ -1,7 +1,7 @@
 ---
 title: "Data-Reanalysis-Assignment"
 author: "Arora"
-date: "December 3, 2017"
+date: "December 9, 2017"
 output: html_document
 ---
 #Replication of Ellefsen and Smith 2016
@@ -255,7 +255,6 @@ plotSelectedTraces(samplePars)
 
 ![This is their image for the first chain. In the standard deviation vector, the second probabiity density function is switched with the first. In their image the two lines never cross each other. If the red and blue lines crossed, they would need to change the posterior probability density function.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Trace_Chain_1.jpg)
 
-
 ![In my first chain, the mean has the second probability density function switched and on top while the standard deviation has the second probability density function on top. This chain should be fine to analyze because the lines don't cross.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_chain_1.JPG)
 
 #####Next check each chain to select the model which best fits the data. While it is tempting to select the model with the highest log-likelihood ratio, the modes should be selected by how well they explain previous geochemical knowledge. However the authors do not explain how the models they selected best fit their previous geological knowledge about soils in Colorado
@@ -265,7 +264,6 @@ plotPointStats(samplePars)
 ```
 
 ![In their point statistics the first and third chains are switched. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Point_Statistics.jpg)
-
 
 ![In my plot the second and fourth chains are switched and would need to be switched back so that the second probability density function (which is red) is below the first probability density function (which is blue).](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_point_stats.JPG)
 
@@ -348,7 +346,7 @@ simplexModPar <- backTransform (gcData,nPCs, transData, combinedChains)
 
 #####This is reording the elements. I would have done this alphabetically or perhaps in the order of major elements followed by trace elements. 
 
-```{r}
+```{r, eval=FALSE}
 elementOrder <- c("Sr", "U", "Y", "Nb", "La", "Ce", "Th", "Na", "Al", "Ga","Be", "K", "Rb", "Ba", "Pb", "Cu", "Zn", "Mo", "Mg", "Sc", "Co", "Fe", "V", "Ni","Cr", "Ca", "P", "Ti", "Li", "Mn", "Sn","As", "Bi", "Cd", "In", "S", "Sb", "Tl","W", "EE")
 ```
 
@@ -380,15 +378,14 @@ plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 ![Note how due to the translation, we can now distinguish between the two probability density functions for Thallium and Antimony](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Translated_Compositional_Centers.jpg)
  
 
-![]()
+![In my ]()
 
 #####Our next visualization is looking at the variation matrices for both probability density functions. Like the second and fourth graphs produced in the plotTCorr, the graph is symmetrical across the diagonal line. Unlike the plots in plotTCorr, Ellefsen and Smith decided to combine both variation matrices into one matrix. 
 
 #####The first probability density function is in the upper right triangle and the second is in the lower left triangle, which I think makes understanding the graphs more difficult. 
 
 #####This graph is the the standard deviation of the log-ratios between two elements. I've done similar analyses before however each element is plotted against each other individually which makes the graphs very large but its easier to see the variation (in the case I'm discussing a lot of variation looks like a cloud with no patterns; I'll try and insert an image of it in here however the computer we use might be in Greece still).
-
-#####In mine.... 
+.. 
 
 ```{r, eval=FALSE}
 plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
@@ -396,14 +393,13 @@ plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 
 ![In theirs variation matrix it looks like the variance is smaller in the second probability density function than in the first.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Variation_Matrix.jpg)
 
-![In my variation matrix it looks like the upper triangle has a higher standard deviation than the lower triangle. 
-](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_variation_correlation_matrix.JPG)
+![In my variation matrix it looks like the upper triangle has a higher standard deviation than the lower triangle.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_variation_correlation_matrix.JPG)
 
-#####Let's graph the clusters onto the map of Colorado. There are four categories created.
 
-#####The association between the field sample and the probability distribution is calculated using the range of median probabilities calculated within the conditional probability matrix for the first probability density function (condProb1). The key to interpreting the map and the median probabilities associated with each category explained in the table below. 
 
-```{r}
+#####The final visualization is the graph of the association between the field samples and the conditional probability matrix from the first probability density function (condProb1). The values used to assign the four categories are the median probabilities calculated from condProb1. The csv file below contains the key to interpreting the map and the median probabilities associated with each category. 
+
+```{r, eval=FALSE}
 m<-read.csv(file="https://raw.githubusercontent.com/geochemica/data-reanalysis-assignment/master/MapKey.csv")
 m    
 ```
@@ -423,6 +419,8 @@ plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
 #####Ellefsen, Karl J. and David B. Smith 2016.  Manual hierarchical clustering of regional geochemical data using a Bayesian finite mixture model. Applied Jeochemistry 75: 200-2010.
 
 #####Ellefsen, Karl J. and David B Smith 2016. User's guide for GcClust - An R package for clustering of regional geochemical data: U.S.Geological Survey Techniques and Methods 7-C13, 21 p., http://dx.doi.org/10.3133/tm7c13
+
+#####https://github.com/USGS-R/GcClust 
 
 #####Kabacoff, Robert I. 2015.  R in Action: Data analysis and graphics with R, Second Edition.Shelter Island, Manning. 
 
