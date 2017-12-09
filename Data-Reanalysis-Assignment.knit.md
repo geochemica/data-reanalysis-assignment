@@ -58,29 +58,108 @@ output: html_document
 ##Reanalysis
 
 #####First download and open the following packages: {colorspace}, {GcClust}, {ggplot2}, {maps}, {mvtnorm}, {reshape2}, {robustbase}, {rstan}, {sp}, {shiny}
-```{r}
+
+```r
 library(colorspace)
+```
+
+```
+## Warning: package 'colorspace' was built under R version 3.4.2
+```
+
+```r
 library(GcClust)
 library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.4.2
+```
+
+```r
 library(maps)
+```
+
+```
+## Warning: package 'maps' was built under R version 3.4.2
+```
+
+```r
 library(mvtnorm)
 library(reshape2)
+```
+
+```
+## Warning: package 'reshape2' was built under R version 3.4.2
+```
+
+```r
 library(robustbase)
+```
+
+```
+## Warning: package 'robustbase' was built under R version 3.4.2
+```
+
+```r
 library(rstan)
+```
+
+```
+## Warning: package 'rstan' was built under R version 3.4.2
+```
+
+```
+## Loading required package: StanHeaders
+```
+
+```
+## Warning: package 'StanHeaders' was built under R version 3.4.2
+```
+
+```
+## rstan (Version 2.16.2, packaged: 2017-07-03 09:24:58 UTC, GitRev: 2e1f913d3ca3)
+```
+
+```
+## For execution on a local, multicore CPU with excess RAM we recommend calling
+## rstan_options(auto_write = TRUE)
+## options(mc.cores = parallel::detectCores())
+```
+
+```r
 library(sp)
+```
+
+```
+## Warning: package 'sp' was built under R version 3.4.2
+```
+
+```r
 library(shiny)
 ```
+
+```
+## Warning: package 'shiny' was built under R version 3.4.2
+```
 #####As per the instructions within the supplementary information for the paper, add dataset into gcData. 
-```{r}
+
+```r
 gcData<-CoGeochemData 
 #in their instructions they save their data at each point in .dat files however I did not.
 #the data needs to be put into gcData because many of the functions (found on their github site here: https://github.com/USGS-R/GcClust/blob/master/R/GcClusterFunctions.R) require the dataset to be in a list called gcData. 
 ```
 #####The following is a map of the points where samples were taken. 
-```{r}
+
+```r
 maps::map(database="state", regions = "Colorado", fill=FALSE)
 plot(gcData$concData, add = TRUE, pch =
 16, cex = 1/3)
+```
+
+<img src="Data-Reanalysis-Assignment_files/figure-html/unnamed-chunk-3-1.png" width="672" />
+
+```r
 #their original code had fill, a white border, and red points however I could not get that particular code to work so I edited so the points were back and the fill was removed. 
 ```
 
@@ -88,7 +167,8 @@ plot(gcData$concData, add = TRUE, pch =
 
 #####Step 1: Transform the concentration data first by isometric log-ratio (ilr) transform and then the robust principle components transform. The ilr transform changes the data into a form that can be clustered. The robust principle componetns transform is done because the authors assume it will make the following model more stable by reducing the number of dimensions. Both transformations occur within the transformGcData function. 
 
-```{r}
+
+```r
 transData<-transformGcData(gcData)
 #I decided not to use the code head(transData) because when doing so, it seems the entire data comes up rather than just the beginning
 ```
@@ -97,17 +177,27 @@ transData<-transformGcData(gcData)
 
 ####The following are two plots of the principle components. The first is a box plot and the second is a violin plot, ,though they show the same information. As with box plots, the lower end of the whisper shows the 25th percentile and the end of the upper whisker shows the 75th percentile. At this stage my plots and their plots look exactly the same. 
 
-```{r}
+
+```r
 plotEdaDist(transData)
 ```
+
+<img src="Data-Reanalysis-Assignment_files/figure-html/unnamed-chunk-5-1.png" width="672" />
 
 ![This is a correlation matrix of the principle components using the Pearson's correlation coefficient, which is like R-squared, so a -1 exactly negative correlation, a zero is correlation, and a +1 is complete positive correlation. However if this graph works like the same type of graph below (that graph is the matrices used for model checking), then the graph should look very similar across the red diagonal, and the value of the coefficient is not really taken into account. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Principle_Component_Plots.jpg)
 
 #####I did not find this particular graph helpful when attempting to determine the number of principle components to select. 
 
-```{r}
+
+```r
 plotEdaCorr(transData)
 ```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+<img src="Data-Reanalysis-Assignment_files/figure-html/unnamed-chunk-6-1.png" width="672" />
 
 ![This is their correlation matrix and their matrix looks very similar across the red diagonal. The histogram of the correlations and sits in the range of very poor correlation in the both positive and negative directions.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Correlation_Matrix_for_PCA.jpg)
 #####I also did not find these graphs helpful when attempting to determine principle components. When I begin to edit the functions and add in my own dataset, I will disregard these graphs. 
@@ -115,25 +205,31 @@ plotEdaCorr(transData)
 
 #####Now we will analyze a scree plot. In R in Action a Scree plot is described as one way of determing the number of principle components to keep for analysis. While Ellefsen and Smith (2016) decide to use add up principle components until they come up with a certain value, a scree plot is uses a matrix of Eigenvalues versus the component. Depending on the type of scree test performed, the user is either looking for a bend or "elbow" in the graph or the number of components where the eigenvalue is less than one. Because the eigenvalues were not plotted, instead we will look for the dip to determine the number of princpal componetns as well as the cumulative variance we want to account for.And while choosing 39 principle components will describe all the data, we perform principle components analysis to essentially reduce the number of variables. 
 
-```{r}
+
+```r
 plotEdaVar(transData)
 ```
+
+<img src="Data-Reanalysis-Assignment_files/figure-html/unnamed-chunk-7-1.png" width="672" />
 ![This is the scree plot presented in the paper. The authors wanted to select enough principle components to explain 75% to 95% of the data. To do this we could choose any principle component starting at 6 and going until 21, however they decided to select 22 components because that represents 96% of the data. I would probably have chosen 10 principle components. I decided to use 22 principle components after I had to edit some of their functions and wanted to see how my results would differ if I kept everything else the same; I plan to see how changing the number of principle components does change the analysis however running the model below takes upwards of two hours on my compter.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Scree_Plott.jpg)
 
-```{r}
+
+```r
 nPCs <- 22
 ```
 
 #####Step 3: Use the mixture model. This file is from their github repository, cited below. I have little experience with Bayesian statistics and no knowledge of the stan programming language, so I have yet to parse out what their code is actually doiong. Expect updates here. 
 
-```{r}
+
+```r
 tmp<-normalizePath(path.package("GcClust"))
 load(paste(tmp, "\\stan\\MixtureModel.bin", sep=""))
 ```
 
 #####The following code is used to sample the chains, however I had to edit this code because R ran an error with some of their code. This function is used in the samplePars function below. This code is available from their github repository. 
 
-```{r}
+
+```r
 sampleFmm <- function(transData, nPCs, sm,
                       priorParams,
                       nWuSamples = 500,
@@ -203,16 +299,17 @@ sampleFmm <- function(transData, nPCs, sm,
 
 #####Our results will look different from here. However the code below will note run because this model cannot knit. I have included images of my own results and interpreted those results as I  can find no way of load a .dat file into R and loading my previous chains into SamplePars.  
  
-```{r, eval=FALSE}
+
+```r
 priorParams <- c(4, 3, 3, 2)
 samplePars <- sampleFmm(transData, nPCs,sm, priorParams, nChainsPerCore = 5, nCores = 4)
-
 ```
 
 #####Step 4: Selecting the chains for furthur analysis. Currently there are 20 chains will 551 model parameters. To select the chains, first plot the chains. 
 
 
-```{r, eval=FALSE}
+
+```r
 plotSelectedTraces(samplePars)
 #I only included the picture of the first chain instead of all twenty (from the model I run prior to knitting) because adding all twenty seemed excessive 
 ```
@@ -224,7 +321,8 @@ plotSelectedTraces(samplePars)
 
 #####Next check each chain to select the model which best fits the data. While it is tempting to select the model with the highest log-likelihood ratio, the modes should be selected by how well they explain previous geochemical knowledge. However the authors do not explain how the models they selected best fit their previous geological knowledge about soils in Colorado
 
-```{r, eval=FALSE}
+
+```r
 plotPointStats(samplePars)
 ```
 
@@ -237,21 +335,36 @@ plotPointStats(samplePars)
 
 #####The csv file below allows the combinedChains function to combine the desired chains. I wrote into the csv for the second and fourth chains to be switched. All the information from the first probability density function should be on top of the information from the second probability function. Despite the switching not working, this is explained below, the results of the analysis are very similar.  . 
 
-```{r}
+
+```r
 f<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv")
 f    
+```
+
+```
+##   Chain is.Switched
+## 1     1       FALSE
+## 2     2        TRUE
+## 3     3       FALSE
+## 4     4        TRUE
+```
+
+```r
 #Ellefsen and Smith give the format for this file in their guide to using GcClust.
 ```
 
-```{r, eval=FALSE}
+
+```r
 selectedChains<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv", header=TRUE, stringsAsFactors = FALSE)
 ```
 
-```{r, eval=FALSE}
+
+```r
 combinedChains <- combineChains(samplePars,selectedChains)
 ```
 
-```{r, eval=FALSE}
+
+```r
 combineChainz <- function(samplePars, selectedChains, procDir = ".") {
   sfList <- vector(mode = "list")
   for(k in 1:nrow(selectedChains)) {
@@ -265,7 +378,8 @@ combineChainz <- function(samplePars, selectedChains, procDir = ".") {
 
 #####This step combines the chains together so that we can use them for the next step. The if statement in their combineChains function did not work so I removed that statement and replaced their funciton with combineChainz (with a z).Despite the chains not switching into their correct places, the analysis below worked out very similar to their analysis. 
 
-```{r, eval=FALSE}
+
+```r
 combinedChains<-combineChainz(samplePars, selectedChains, procDir = ".")
 ```
 
@@ -273,13 +387,15 @@ combinedChains<-combineChainz(samplePars, selectedChains, procDir = ".")
 
 #####To begin checking the model, we need to calculate the conditional probability that a particular sample is associated with the first probability density function. These conditional probabilities, along with the principle components are used to calculate the mean vectors, standard deviation vectors, and correlation matrices necessary for checking our model. 
 
-```{r, eval=FALSE}
+
+```r
 condProbs1 <- calcCondProbs1 (transData,nPCs, combinedChains)
 ```
 
 #####This matrix is calculated from the 22 principle components and the conditional probabilities. 
 
-```{r, eval=FALSE}
+
+```r
 obsTestStats <- calcObsTestStats (transData,nPCs, condProbs1)
 ```
 
@@ -289,7 +405,8 @@ obsTestStats <- calcObsTestStats (transData,nPCs, condProbs1)
 
 #####The following is a plot of the mean and standard deviation vectors. The red dot is the test statistic which should be close to the median, the vertical black line represents the 95% confidence interval. This figure also gives p value between the observed and replicated statistics. 
 
-```{r, eval=FALSE}
+
+```r
 plotTMeanSd(combinedChains, obsTestStats)
 ```
 
@@ -300,7 +417,8 @@ plotTMeanSd(combinedChains, obsTestStats)
 
 #####Now its time to compare the correlation matrices between the test statistics and the replicated statistics. 
 
-```{r, eval=FALSE}
+
+```r
 plotTCorr(combinedChains, obsTestStats)
 #this set of four graphs looks very complex at first. Let's first concentrate on the first and third graphs which are fully coloured and have the red diagonal line. The top right triangle of each graph represents the correlation matrix from the principle components. The bottom left triangle represents the correlation matrix from the replicated samples. The comparison between the two is do they look the same? In their case their graphs do look the same across the red line. 
 #The two blue graphs which only fill the top right portion of the graph present the p-values. However these values will be mirror across the diagonal line so both sides are not shown. In this particular analysis, the largest possible posterior predictive p-value is 0.5 and so in their graphs the p-values are, as they state, moderate to large. 
@@ -312,13 +430,15 @@ plotTCorr(combinedChains, obsTestStats)
 
 #####The values from combinedChains (mean vector, standard deviation vector, and correlation matrices) are transformed in simplex. Simplex here refers to an algorithm in linear programming which helps with optimization. 
 
-```{r, eval=FALSE}
+
+```r
 simplexModPar <- backTransform (gcData,nPCs, transData, combinedChains)
 ```
 
 #####This is reording the elements. I would have done this alphabetically or perhaps in the order of major elements followed by trace elements. 
 
-```{r}
+
+```r
 elementOrder <- c("Sr", "U", "Y", "Nb", "La", "Ce", "Th", "Na", "Al", "Ga","Be", "K", "Rb", "Ba", "Pb", "Cu", "Zn", "Mo", "Mg", "Sc", "Co", "Fe", "V", "Ni","Cr", "Ca", "P", "Ti", "Li", "Mn", "Sn","As", "Bi", "Cd", "In", "S", "Sb", "Tl","W", "EE")
 ```
 
@@ -326,7 +446,8 @@ elementOrder <- c("Sr", "U", "Y", "Nb", "La", "Ce", "Th", "Na", "Al", "Ga","Be",
 
 #####In the graph there are two dots: one red and one blue. For a particular element the blue dot represents the median concentration as calculated by the first probability density function, and the red dot presents the median concentration as calculated by the second probability density function. In some of the elements it is easy to make out that there is a large difference between the two probability density functions, however some elements are right on top of each other according to this cale. It's for these reasons that the next transformation is done. 
 
-```{r, eval=FALSE}
+
+```r
 plotCompMeans(simplexModPar, elementOrder)
 ```
 
@@ -337,13 +458,15 @@ plotCompMeans(simplexModPar, elementOrder)
 
 #####Using simplex again, the statistics are translated to allow us to tell the difference between the medians of the first probability density function versus the second. Ellefsen and Smith also want to add additional information to the plot involving the replicated statistics.
 
-```{r, eval=FALSE}
+
+```r
 simplexStats <- calcSimplexStats(gcData)
 ```
 
 #####This plot has thhe translated data which is cleared to read and has the addition of the 95% confidence interval. As always, blue represents the first probaility density function and red represents the second. The only problem is is that with the transformation, we loose the units of concentration and so this data is less comparable to other data sets. 
 
-```{r, eval=FALSE}
+
+```r
 plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 ```
 
@@ -360,7 +483,8 @@ plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 
 #####In mine.... 
 
-```{r, eval=FALSE}
+
+```r
 plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 ```
 
@@ -373,11 +497,26 @@ plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 
 #####The association between the field sample and the probability distribution is calculated using the range of median probabilities calculated within the conditional probability matrix for the first probability density function (condProb1). The key to interpreting the map and the median probabilities associated with each category explained in the table below. 
 
-```{r}
+
+```r
 m<-read.csv(file="C:/Users/Arora/Desktop/MapKey.csv")
 m    
 ```
-```{r, eval=FALSE}
+
+```
+##    Color Median.Probability.Range Associated.Probability.Density.Function
+## 1   Blue                  0.9-1.0                                       1
+## 2  Green                  0.5-0.9                                       1
+## 3    Red                  0.1-0.5                                       2
+## 4 Yellow                  0.0-0.1                                       2
+##   Degree.of.Association
+## 1                Strong
+## 2              Moderate
+## 3              Moderate
+## 4                Strong
+```
+
+```r
 map(database = "state", regions = "colorado", fill = TRUE, col = "grey95", border = "white")
 map.axes()
 plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
