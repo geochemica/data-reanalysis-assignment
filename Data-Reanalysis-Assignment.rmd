@@ -94,13 +94,13 @@ transData<-transformGcData(gcData)
 
 #####Step 2: Select the number of principle components. The authors present several plots to determine the number of principle components they will use. However, they decide to use the cumulative method, which is when the analyst keeps adding principle components until a certain percentage of the dataset is selected for. For the purpose of replicating their study I have followed their example. 
 
-#####The following are two plots of the principle components. The first is a box plot and the second is a violin plot, ,though they show the same information. As with box plots, the lower end of the whisper shows the 25th percentile and the end of the upper whisker shows the 75th percentile. At this stage my plots and their plots look exactly the same. 
+#####The following image is of two plots of the principle components. The first is a box plot and the second is a violin plot,though they show the same information. As with most box plots the lower end of the whisper shows the 25th percentile and the end of the upper whisker shows the 75th percentile. At this stage my plots and their plots look exactly the same. 
 
 ```{r}
 plotEdaDist(transData)
 ```
 
-![This is a correlation matrix of the principle components using the Pearson's correlation coefficient, which is like R-squared, so a -1 exactly negative correlation, a zero is correlation, and a +1 is complete positive correlation. However if this graph works like the same type of graph below (that graph is the matrices used for model checking), then the graph should look very similar across the red diagonal, and the value of the coefficient is not really taken into account. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Principle_Component_Plots.jpg)
+![The plot above is from their paper and user guide to GcClust. Their plot and my plot should look exactly the same. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Principle_Component_Plots.jpg)
 
 #####I did not find this particular graph helpful when attempting to determine the number of principle components to select. 
 
@@ -108,11 +108,12 @@ plotEdaDist(transData)
 plotEdaCorr(transData)
 ```
 
-![This is their correlation matrix and their matrix looks very similar across the red diagonal. The histogram of the correlations and sits in the range of very poor correlation in the both positive and negative directions.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Correlation_Matrix_for_PCA.jpg)
+![This is a correlation matrix of the principle components using the Pearson's correlation coefficient, which is like R-squared, so a -1 is exactly negative correlation, a zero is no in either direction correlation, and a +1 is complete positive correlation. However if this graph works like the same type of graph below (that graph is the matrices used for model checking, their figure 8 which is included below), then the graph should look very similar across the red diagonal, and the value of the coefficient is not really taken into account. Their graph does look very similar across the diagonal. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Correlation_Matrix_for_PCA.jpg)
+
 #####I also did not find these graphs helpful when attempting to determine principle components. When I begin to edit the functions and add in my own dataset, I will disregard these graphs. 
 
 
-#####This is the scree plot. In R in Action a scree plot is described as one way of determing the number of principle components to keep for analysis. While Ellefsen and Smith (2016) decide to use add up principle components until they come up with a certain value, a scree plot is uses a matrix of Eigenvalues versus the component. Depending on the type of scree test performed, the user is either looking for a bend or "elbow" in the graph or the number of components where the eigenvalue is less than one. Because the eigenvalues were not plotted, instead we will look for the dip to determine the number of princpal componetns as well as the cumulative variance we want to account for.And while choosing 39 principle components will describe all the data, we perform principle components analysis to essentially reduce the number of variables. 
+#####This is the scree plot. In R in Action a scree plot is described as one way of determing the number of principle components to keep for analysis. While Ellefsen and Smith (2016) decide to use add up principle components until they come up with a certain value, a scree plot is uses a matrix of Eigenvalues versus the component. Depending on the type of scree test performed, the user is either looking for a bend or "elbow" in the graph or the number of components where the eigenvalue is less than one. Because the eigenvalues were not plotted, instead we will look for the dip to determine the number of princpal componetns as well as the cumulative variance we want to account for. And while choosing 39 principle components will describe all the data, we perform principle components analysis to essentially reduce the number of variables. 
 
 ```{r}
 plotEdaVar(transData)
