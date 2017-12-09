@@ -133,7 +133,7 @@ load(paste(tmp, "\\stan\\MixtureModel.bin", sep=""))
 
 #####The following code is used to sample the chains, however I had to edit this code because R ran an error with some of their code. This function is used in the samplePars function below. This code is available from their github repository. 
 
-```{r}
+```{r, eval=FALSE}
 sampleFmm <- function(transData, nPCs, sm,
                       priorParams,
                       nWuSamples = 500,
@@ -238,7 +238,7 @@ plotPointStats(samplePars)
 #####The csv file below allows the combinedChains function to combine the desired chains. I wrote into the csv for the second and fourth chains to be switched. All the information from the first probability density function should be on top of the information from the second probability function. Despite the switching not working, this is explained below, the results of the analysis are very similar.  . 
 
 ```{r}
-f<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv")
+f<-read.csv(file="https://raw.githubusercontent.com/geochemica/data-reanalysis-assignment/master/selectedChains.csv")
 f    
 #Ellefsen and Smith give the format for this file in their guide to using GcClust.
 ```
@@ -374,7 +374,7 @@ plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 #####The association between the field sample and the probability distribution is calculated using the range of median probabilities calculated within the conditional probability matrix for the first probability density function (condProb1). The key to interpreting the map and the median probabilities associated with each category explained in the table below. 
 
 ```{r}
-m<-read.csv(file="C:/Users/Arora/Desktop/MapKey.csv")
+m<-read.csv(file="https://raw.githubusercontent.com/geochemica/data-reanalysis-assignment/master/MapKey.csv")
 m    
 ```
 ```{r, eval=FALSE}
