@@ -237,14 +237,8 @@ plotPointStats(samplePars)
 
 #####The csv file below allows the combinedChains function to combine the desired chains. I wrote into the csv for the second and fourth chains to be switched. All the information from the first probability density function should be on top of the information from the second probability function. Despite the switching not working, this is explained below, the results of the analysis are very similar.  . 
 
-```{r}
-f<-read.csv(file="https://raw.githubusercontent.com/geochemica/data-reanalysis-assignment/master/selectedChains.csv")
-f    
-#Ellefsen and Smith give the format for this file in their guide to using GcClust.
-```
-
 ```{r, eval=FALSE}
-selectedChains<-read.csv(file="C:/Users/Arora/Desktop/selectedChains.csv", header=TRUE, stringsAsFactors = FALSE)
+selectedChains<-read.csv(file="https://raw.githubusercontent.com/geochemica/data-reanalysis-assignment/master/selectedChains.csv", header=TRUE, stringsAsFactors = FALSE)
 ```
 
 ```{r, eval=FALSE}
