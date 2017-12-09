@@ -360,7 +360,7 @@ plotCompMeans(simplexModPar, elementOrder)
 ![This is Ellefsen and Smith's compositional centers plot. Note how the values for Thallium and Antinomy are essentially on top of each other so indistinguishable.
 ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Compositional_Centers.jpg)
 
-![Note in my plot how the values for Rubidium, Potassium, and Barium are also instituguishable. ](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_comp_means.JPG)
+![Note in my plot how the values for Rubidium, Potassium, and Barium are also instituguishable.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_comp_means.JPG)
 
 #####Using simplex again, the statistics are translated to allow us to tell the difference between the medians of the first probability density function versus the second. Ellefsen and Smith also want to add additional information to the plot involving the replicated statistics.
 
@@ -377,7 +377,7 @@ plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 ![Note how due to the translation, we can now distinguish between the two probability density functions for Thallium and Antimony](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Translated_Compositional_Centers.jpg)
  
 
-![In my the centers for Rhodium, Potassium, and Barium are no longer right on top of each other however because the units of concentration have been removed, this plot isn't useful when trying to compare this dataset with others.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_chain_1.JPG)
+![In my the centers for Rhodium, Potassium, and Barium are no longer right on top of each other however because the units of concentration have been removed, this plot isn't useful when trying to compare this dataset with others.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/translated_comp_centers.jpg)
 
 #####The next visualization is the variation matrices for eacch probability density function. The variation matrix for the first probability density function is the upper right triangle and the matrix for the second is in the lower left triangle. This plot shows the standard deviation of the log-ratios between two elements. 
 
