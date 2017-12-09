@@ -10,9 +10,9 @@ output: html_document
 
 #####The following is the reanalysis of Ellefsen and Smith's 2016 paper Manuel hierarchical clustering of regional geochemical data using a Bayesian finite mixture model. 
 
-#####In this study the authors use a Bayesian finite mixture model to cluster geochemical data from a USGS survey ofsoil geochemistry in Colorado. They use a Bayesian model instead of other clustering techniques that others have previously used. 
+#####In this study the authors use a Bayesian finite mixture model to cluster geochemical data from a USGS survey of soil geochemistry in Colorado. They use this Bayesian model instead of another clustering technique, because a Bayesian model has yet to be used in this type of research.
 
-#####In their paper they use hierarchical modeling to create two clusters of the data, with the goal of breaking those clusters into two more clusters. Each set of clusters should represent different geologic, climatic, and biological processes occuring at different scales. Clustering is a useful technique because this type of survey data can encompass thousands of samples with many elements measured (given the constraints of my equipment, I measure 13 however in this study they begin with 44 elements). Such large datasets are difficult to analyze without multivariate techniques. 
+#####In their paper they use hierarchical modeling to create two clusters of the data, with the goal of breaking those clusters into two more clusters, and so on. Each set of clusters should represent different geologic, climatic, and biological processes occuring at different spacial scales. Clustering is a useful technique in geochemical analysis because this type of survey data can encompass thousands of samples with many elements measured (given the constraints of my equipment I measure 13 elements however in this study they begin with 44 elements).
 
 #####To derieve the parameters for their model they use the Monte Carlo sampling and then check each model again previously known geologic models. The model which best fits that previous knowledge is used from analysis. 
 
@@ -378,7 +378,7 @@ plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 ![Note how due to the translation, we can now distinguish between the two probability density functions for Thallium and Antimony](https://github.com/geochemica/data-reanalysis-assignment/blob/master/Translated_Compositional_Centers.jpg)
  
 
-![In my the centers for Rhodium, Potassium, and Barium are no longer right on top of each other however because the units of concentration have been removed, this plot isn't useful when trying to compare this dataset with others.]()
+![In my the centers for Rhodium, Potassium, and Barium are no longer right on top of each other however because the units of concentration have been removed, this plot isn't useful when trying to compare this dataset with others.](https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_chain_1.JPG)
 
 #####The next visualization is the variation matrices for eacch probability density function. The variation matrix for the first probability density function is the upper right triangle and the matrix for the second is in the lower left triangle. This plot shows the standard deviation of the log-ratios between two elements. 
 
