@@ -1,0 +1,5 @@
+Color,Median Probability Range, Associated Probability Density Function, Degree of Association
+Blue, 0.9-1.0, 1, Strong
+Green,0.5-0.9, 1, Moderate
+Red,0.1-0.5, 2, Moderate
+Yellow, 0.0-0.1, 2, Strong
