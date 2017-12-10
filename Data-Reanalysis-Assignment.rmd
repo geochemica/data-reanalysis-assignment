@@ -361,7 +361,7 @@ plotTMeanSd(combinedChains, obsTestStats)
 
 ######This is Ellefsen and Smith's means and standard deviation vectors for the first chain. The red dot is the test statistic and should be within the vertical black line and close to the horizonal black line. The vertical black line is the 95% confidence interval and the horizonal one is the median. It may be by design that the dot is so big that in every graph the red dot contains the median, though this may actually reflect the test statistic. The principal components in the standard deviation plots around principal componant 10 become about the same size as the dot but all the dots are defined by the two black lines. In the user guide, Ellefsen and Smith do not comment which type of p-values are are the top of each graph, however if these are the posterior probability p-values from the matrices below, then all the p-values are moderate to high; in the posterior probability p-values, the highest p-value is 0.5
 
-<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_plot_meansd.JPG" width="500px"/>
+<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/plotted_observed_stats.png" width="500px"/>
 
 ######These plots look very similar for both runs, except that mine looks more squat. This is surprising seeing as I did not switch any chains. The test statistics are also defined by the two black lines in my plots for both the mean vectors and the standard deviation vectors. The p-values in these plots are both difficult to see (apologies) but moderate to high with most around 0.4 for the mean vectors and 0.3 for the standard deviation vectors.
 
