@@ -406,7 +406,7 @@ plotCompMeans(simplexModPar, elementOrder)
 
 ######In the graph there are two dots: one red and one blue. For a particular element the blue dot represents the median concentration as calculated by the first probability density function, and the red dot presents the median concentration as calculated by the second probability density function. In some of the elements it is easy to make out that there is a large difference between the two probability density functions, however some elements are right on top of each other according to this scale. It's for these reasons that the next transformation is done. This is Ellefsen and Smith's compositional centers plot. Note how the values for thallium and antinomy are essentially on top of each other so indistinguishable
 
-<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_comp_means.JPG" width="500px"/>
+<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/compositional_centers_concnetration.png" width="500px"/>
 
 ######Note in my plot how the values for rubidium, potassium, and barium are also instituguishable.
 
