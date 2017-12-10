@@ -426,7 +426,7 @@ plotTransCompMeans(simplexModPar,simplexStats, gcData, elementOrder)
 
 ######Note how due to the translation, we can now distinguish between the two probability density functions for thallium and antimony.
 
-<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/translated_comp_centers.jpg" width="500px"/>
+<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/translated_compositional_centers.png" width="500px"/>
 
 ######In my the centers for rhodium, potassium, and barium are no longer right on top of each other however because the units of concentration have been removed, this plot isn't useful when trying to compare this dataset with others.]
 
