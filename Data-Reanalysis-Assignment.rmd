@@ -282,7 +282,7 @@ plotPointStats(samplePars)
 ######In their point statistics the first and third chains are switched.
 
 
-<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_point_stats.JPG" width="500px"/>
+<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/point_statistics.png" width="500px"/>
 
 ######In my plot the second and fourth chains are switched and would need to be switched back so that the second probability density function is below the first probability density function.
 
