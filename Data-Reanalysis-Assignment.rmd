@@ -262,12 +262,12 @@ plotSelectedTraces(samplePars)
 #I only included the picture of the first chain instead of all twenty (from the model I run prior to knitting) because adding all twenty seemed excessive 
 ```
 
-<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/first_trace.png" width="500px"/>
+<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/Trace_Chain_1.jpg" width="500px"/>
 
 ######This is their image for the first chain. In the standard deviation vector, the second probability density function is switched with the first meaning that the red line, which is the second probability density funciton, in on the top portion of the graph while the blue line - the first probability density function - is on the bottom. This switch is okay because using their code we should be able to switch everything back into their right place. In their image the two lines never cross each other, which is what they are checking for. If the red and blue lines crossed, they would need to change the posterior probability density function.
 
 
-<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_chain_1.JPG" width="500px"/>
+<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/first_trace.png" width="500px"/>
 
 ######In my first chain, the mean has the second probability density function switched and on top while the standard deviation has the second probability density function on top. This chain should be fine to analyze because the lines don't cross
 
