@@ -440,7 +440,7 @@ plotSqrtVarMatrices( simplexModPar,elementOrder, colorScale = "rainbow" )
 
 ######In theirs variation matrix it looks like the variance is smaller in the second probability density function than in the first.
 
-<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_variation_correlation_matrix.JPG" width="500px"/>
+<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/variation_matrix.png" width="500px"/>
 
 ######In my variation matrix it looks like the upper triangle has a higher standard deviation than the lower triangle.
 
