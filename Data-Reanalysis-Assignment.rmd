@@ -461,7 +461,7 @@ plotClusters(gcData, condProbs1, symbolSizes = rep.int(2/3, 4))
 
 ######Their mode map is mostly blue and red.This means that their data is strongly associated with the first probability density function or moderately associated with the second probability density function. 
 
-<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/my_mode_map.JPG" width="500px"/>
+<img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/model_map.png" width="500px"/>
 
 ######Like their map, mine is also mostly blue and red. This means both our points are either strongly associated with the first probability function or moderately associated with the second.
 
