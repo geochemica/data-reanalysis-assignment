@@ -87,6 +87,7 @@ plot(gcData$concData, add = TRUE, pch =
 
 ######This is the map Ellefsen and Smith included in their paper.
 
+
 #####Step 1: Transform the concentration data first by isometric log-ratio (ilr) transform and then the robust principle components transform. The ilr transform changes the data into a form that can be clustered. The robust principle components transform is done because the authors assume it will make the following model more stable by reducing the number of dimensions. Both transformations occur within the transformGcData function. 
 
 ```{r}
