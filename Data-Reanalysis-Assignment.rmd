@@ -12,7 +12,7 @@ output: html_document
 
 #####In this study the authors use a Bayesian finite mixture model to cluster geochemical data from a USGS survey of soil geochemistry in Colorado. They use this Bayesian model instead of another clustering technique, because a Bayesian model has yet to be used in this type of research.
 
-#####In their paper they use hierarchical modeling to create two clusters of the data, with the goal of breaking those clusters into two more clusters, and so on. Each set of clusters should represent different geologic, climatic, and biological processes occuring at different spacial scales. Clustering is a useful technique in geochemical analysis because this type of survey data can encompass thousands of samples with many elements measured (given the constraints of my equipment I measure 13 elements however in this study they begin with 44 elements).
+#####Their goal is to understand geochemical processes occuring at different spacial scales. To do this, they use a hierarchical modeling to create two clusters of the data, with the goal of breaking those clusters into two more clusters, and so on. Each set of clusters should represent different geologic, climatic, and biological processes occuring at different spacial scales. Clustering is a useful technique in geochemical analysis because this type of survey data can encompass thousands of samples with many elements measured (in this study they begin with 44 elements).
 
 #####To derieve the parameters for their model they use the Monte Carlo sampling and then check each model against previously known geologic information. The model which best fits that previous knowledge is used for the analysis. 
 
@@ -21,11 +21,13 @@ output: html_document
 
 #####The dataset used in the paper and in this replication can be found in the GcClust package which can be download from https://pubs.er.usgs.gov/publication/tm7C13 . 
 
-#####The dataset for this paper was collected for a USGS (United States Geological Service) survey of soil geochemistry in the state of Colorado. The original dataset for this study consisted of 966 samples with 44 elements measured. Six samples were excludeded because of issues with their location and one was removed because of anthropogenic effects. Five elements were removed because their measured concentrations often fell below their detection limits. This leaves 959 samples with 39 measured elements. Before analysis began the sum of the concentrations of the excluded elements were added up into a column, and the concentrations of the elements were scaled to concentration(mg/kg). 
+#####The dataset for this paper was collected for a USGS (United States Geological Service) survey of soil geochemistry in the state of Colorado. The original dataset for this study consisted of 966 samples with 44 elements measured. Six samples were excludeded because of issues with their location and one was removed because of anthropogenic effects. Five elements were removed because their measured concentrations often fell below their detection limits. This leaves 959 samples with 39 measured elements. 
 
 ##Outline of Analyses
 
-#####Each of these steps, and the arguments for making them will be outline during the replication itself. 
+#####Overall the analyses that they conduct are: (1) determing number of principal components, (2) checking the posterior probability function using the plots of their traces, (3) use 95% confidence intervals of means, standard deviations, proportions, and log-likelihood to select chains for further analyses, (4) use posterior predictive p-values and 95% confidence interval to check their model, (5) analyze correlation between principal components and variation using posterior predictive p-values, (6) create 95% confidence intervals to distinguish one probability density function from the other, (7) view standard deviation of the log-ratios between elements, (8) partion their data based on all those analyses into two clusters. 
+
+#####I will complete steps 1-9 below. 
 
 #####1. Transform compositional data in isometric log-ratio (ilr) coordinates, and transform the ilr coordinates with the robust principle components transform. 
 
@@ -45,14 +47,11 @@ output: html_document
 
 #####9. Visualize the data using the compositional centers, variaiton matrices, and a map of the relationship between the sample and the probability density function. 
 
-#####10. I have not included this final step in this replication. This is where the samples which were partioned into the two probability density functions are put into two separate datasets. The analysis of each of these new datasets begins again to create the hierarchy of clusters. 
+#####10.The samples which were partioned into the two probability density functions are put into two separate datasets. The analysis of each of these new datasets begins again to create the hierarchy of clusters. I have not included this because it is just putting the data into two separate tables. 
 
 ##Compositional Data
 
 #####Compositional data is always postive and adds up to 100% and in geology is often derieved from counts data which is scaled into the units of concentration. One of the problems with compositional data is that because all the data is in the positive real space, measures such as variance are considered impractical. This particular issue is called the constraint problem and can be solved through a transformation. Currently the most robust though statistically least understood method for transformation is the isometric log-ratio transformation. Like most transformations, it is difficult to relate the results after the transformation has taken place with the original dataset. For this reason compositional data should be analyzed in the following way: (1) transform the data, (2) perform any desired statistical analyses, (3) analyze the results, usually by transforming back into the original units. 
-
-#####One important concept about compositional data that is central to geochemical work is subcompositional coherence. This essentially means that taking a part out of the whole does not change the value of the part. 
-
 
 ##Reanalysis
 
@@ -69,11 +68,12 @@ library(rstan)
 library(sp)
 library(shiny)
 ```
-#####As per the instructions within the supplementary information for the paper, add dataset into gcData. 
+#####As per the instructions within the supplementary information for the paper, add dataset into gcData. The dataset used for their study is available in the GcClust package as CoGeochemData. 
 ```{r}
 gcData<-CoGeochemData 
-#in their instructions they save their data at each point in .dat files however I did not.
 #the data needs to be put into gcData because many of the functions (found on their github site here: https://github.com/USGS-R/GcClust/blob/master/R/GcClusterFunctions.R) require the dataset to be in a list called gcData. 
+#they describe how to format the data in their user guide (https://github.com/geochemica/data-reanalysis-assignment/blob/master/GcClust_User_Guide.pdf). Each sample should have a unique identifer, coordinates, and concentration for each element present. 
+head(gcData)
 ```
 #####The following is a map of the points where samples were taken. This map isn't necessary for the analysis. 
 ```{r}
@@ -92,7 +92,6 @@ plot(gcData$concData, add = TRUE, pch =
 
 ```{r}
 transData<-transformGcData(gcData)
-#I decided not to use the code head(transData) because when doing so, it seems the entire data comes up rather than just the beginning
 ```
 
 #####Step 2: Select the number of principle components. The authors present several plots to determine the number of principle components they will use. However, they decide to use the cumulative method, which is when the analyst keeps adding principle components until a certain percentage of the dataset is selected for. For the purpose of replicating their study I have followed their example. 
@@ -359,7 +358,7 @@ plotTMeanSd(combinedChains, obsTestStats)
 
 <img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/Model_Checking.jpg" width="500px"/>
 
-######This is Ellefsen and Smith's means and standard deviation vectors for the first chain. The red dot is the test statistic and should be within the vertical black line and close to the horizonal black line. The vertical black line is the 95% confidence interval and the horizonal one is the median. It may be by design that the dot is so big that in every graph the red dot contains the median, though this may actually reflect the test statistic. The principal components in the standard deviation plots around principal componant 10 become about the same size as the dot but all the dots are defined by the two black lines. In the user guide, Ellefsen and Smith do not comment which type of p-values are are the top of each graph, however if these are the posterior probability p-values from the matrices below, then all the p-values are moderate to high; in the posterior probability p-values, the highest p-value is 0.5
+######This is Ellefsen and Smith's means and standard deviation vectors for the first chain. The red dot is the test statistic and should be within the vertical black line and close to the horizonal black line. The vertical black line is the 95% confidence interval and the horizonal one is the median. It may be by design that the dot is so big that in every graph the red dot contains the median, though this may actually reflect the test statistic. The principal components in the standard deviation plots around principal componant 10 become about the same size as the dot but all the dots are defined by the two black lines. The values above each confidence interval isthe posterior predictive p-value, which has a maximum value of 0.5.
 
 <img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/plotted_observed_stats.png" width="500px"/>
 
@@ -378,7 +377,7 @@ plotTCorr(combinedChains, obsTestStats)
 
 <img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/Model_Check_Matrices.jpg" width="500px"/>
 
-######This is their correlation matrices for the probability density functions. For plots A and C, the values look similar across the red line. For plots B and D most of the squares are dark, showing that high p-values for each probability density function. Remember that the posterior probability p-values have a maximum value of 0.5.
+######This is their correlation matrices for the probability density functions. For plots A and C, the values look similar across the red line. For plots B and D most of the squares are dark, showing that high p-values for each probability density function. Remember that the posterior predictive p-values have a maximum value of 0.5.
 
 <img src="https://github.com/geochemica/data-reanalysis-assignment/blob/master/plotting_correlation.png" width="500px"/>
 
